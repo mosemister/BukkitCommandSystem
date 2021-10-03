@@ -18,7 +18,7 @@ jobs:
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
     - name: Build with Maven
-      run: ./mvn javadoc
+      run: mvn javadoc
 
     - name: Check GitHub Pages status
       uses: crazy-max/ghaction-github-status@v2
