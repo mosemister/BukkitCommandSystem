@@ -21,6 +21,8 @@ jobs:
           java-version: '16'
           distribution: 'adopt'
       - name: Publish package
-        run: mvn --batch-mode deploy
+        run: |
+            mvn -B versions:set -DnewVersion=$GITHUB_SHA -DgenerateBackupPoms=false
+            mvn --batch-mode deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -9,7 +9,7 @@
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>IronForgePack</name>
+    <name>BukkitCommandSystem</name>
 
     <properties>
         <java.version>16</java.version>
