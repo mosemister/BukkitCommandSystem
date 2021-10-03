@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.mose.command</groupId>
-    <artifactId>CommandSystem</artifactId>
+    <artifactId>bukkit-command-system</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>IronForgePack</name>
+    <name>bukkit-command-system</name>
 
     <properties>
         <java.version>16</java.version>
