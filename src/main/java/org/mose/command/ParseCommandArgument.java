@@ -1,5 +1,6 @@
 package org.mose.command;
 
+import org.jetbrains.annotations.NotNull;
 import org.mose.command.context.CommandArgumentContext;
 import org.mose.command.context.CommandContext;
 
@@ -13,6 +14,6 @@ import java.io.IOException;
  */
 public interface ParseCommandArgument<T> {
 
-    CommandArgumentResult<T> parse(CommandContext context, CommandArgumentContext<T> argument) throws IOException;
+    @NotNull CommandArgumentResult<T> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<T> argument) throws IOException;
 
 }

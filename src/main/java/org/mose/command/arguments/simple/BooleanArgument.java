@@ -1,5 +1,6 @@
 package org.mose.command.arguments.simple;
 
+import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
 import org.mose.command.context.CommandArgumentContext;
@@ -11,19 +12,19 @@ import java.util.Set;
 
 public class BooleanArgument implements CommandArgument<Boolean> {
 
-    private final String id;
+    private final @NotNull String id;
 
-    public BooleanArgument(String id) {
+    public BooleanArgument(@NotNull String id) {
         this.id = id;
     }
 
     @Override
-    public String getId() {
+    public @NotNull String getId() {
         return this.id;
     }
 
     @Override
-    public CommandArgumentResult<Boolean> parse(CommandContext context, CommandArgumentContext<Boolean> argument) throws IOException {
+    public @NotNull CommandArgumentResult<Boolean> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<Boolean> argument) throws IOException {
         String arg = context.getCommand()[argument.getFirstArgument()];
         if (arg.equals("true")) {
             return CommandArgumentResult.from(argument, true);
@@ -35,7 +36,7 @@ public class BooleanArgument implements CommandArgument<Boolean> {
     }
 
     @Override
-    public Set<String> suggest(CommandContext commandContext, CommandArgumentContext<Boolean> argument) {
+    public @NotNull Set<String> suggest(@NotNull CommandContext commandContext, @NotNull CommandArgumentContext<Boolean> argument) {
         String peek = commandContext.getCommand()[argument.getFirstArgument()];
         Set<String> list = new HashSet<>();
         if ("true".startsWith(peek.toLowerCase())) {

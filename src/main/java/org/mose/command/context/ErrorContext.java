@@ -1,23 +1,13 @@
 package org.mose.command.context;
 
+import org.jetbrains.annotations.NotNull;
 import org.mose.command.ArgumentCommand;
 import org.mose.command.CommandArgument;
 
-public class ErrorContext {
+public record ErrorContext(@NotNull ArgumentCommand command, int argumentFailedAt,
+                           @NotNull CommandArgument<?> argument, @NotNull String error) {
 
-    private final ArgumentCommand command;
-    private final int argumentFailedAt;
-    private final CommandArgument<?> argument;
-    private final String error;
-
-    public ErrorContext(ArgumentCommand command, int argumentFailedAt, CommandArgument<?> argument, String error) {
-        this.command = command;
-        this.argumentFailedAt = argumentFailedAt;
-        this.argument = argument;
-        this.error = error;
-    }
-
-    public ArgumentCommand getCommand() {
+    public @NotNull ArgumentCommand getCommand() {
         return command;
     }
 
@@ -25,11 +15,11 @@ public class ErrorContext {
         return argumentFailedAt;
     }
 
-    public CommandArgument<?> getArgument() {
+    public @NotNull CommandArgument<?> getArgument() {
         return argument;
     }
 
-    public String getError() {
+    public @NotNull String getError() {
         return error;
     }
 }

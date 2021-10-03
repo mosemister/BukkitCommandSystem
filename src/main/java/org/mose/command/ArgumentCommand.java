@@ -1,6 +1,7 @@
 package org.mose.command;
 
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 import org.mose.command.context.CommandContext;
 
 import java.util.List;
@@ -17,14 +18,14 @@ public interface ArgumentCommand {
      *
      * @return A list of command arguments
      */
-    List<CommandArgument<?>> getArguments();
+    @NotNull List<CommandArgument<?>> getArguments();
 
     /**
      * Gets a description of the command, designing to inform the user on what the command does.
      *
      * @return A string of the description
      */
-    String getDescription();
+    @NotNull String getDescription();
 
     /**
      * Gets the permission node of the command that is required to run the command.
@@ -34,7 +35,7 @@ public interface ArgumentCommand {
      *
      * @return The permission to the command
      */
-    Optional<String> getPermissionNode();
+    @NotNull Optional<String> getPermissionNode();
 
     /**
      * Runs the command

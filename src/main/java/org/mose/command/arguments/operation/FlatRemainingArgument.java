@@ -1,5 +1,6 @@
 package org.mose.command.arguments.operation;
 
+import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
 import org.mose.command.context.CommandArgumentContext;
@@ -11,24 +12,24 @@ import java.util.stream.Collectors;
 
 public class FlatRemainingArgument<T> implements CommandArgument<List<T>> {
 
-    private final String id;
-    private final List<CommandArgument<? extends Collection<T>>> argument;
+    private final @NotNull String id;
+    private final @NotNull List<CommandArgument<? extends Collection<T>>> argument;
 
     @Deprecated
-    public FlatRemainingArgument(String ignored) {
+    public FlatRemainingArgument(@NotNull String ignored) {
         throw new RuntimeException("Flat Remaining Argument requires at least one argument");
     }
 
-    public FlatRemainingArgument(CommandArgument<? extends Collection<T>> argument) {
+    public FlatRemainingArgument(@NotNull CommandArgument<? extends Collection<T>> argument) {
         this(argument.getId(), argument);
     }
 
     @SafeVarargs
-    public FlatRemainingArgument(String id, CommandArgument<? extends Collection<T>>... argument) {
+    public FlatRemainingArgument(@NotNull String id, @NotNull CommandArgument<? extends Collection<T>>... argument) {
         this(id, Arrays.asList(argument));
     }
 
-    public FlatRemainingArgument(String id, Collection<CommandArgument<? extends Collection<T>>> argument) {
+    public FlatRemainingArgument(@NotNull String id, @NotNull Collection<CommandArgument<? extends Collection<T>>> argument) {
         if (argument.isEmpty()) {
             throw new IllegalArgumentException("Remaining Argument cannot have a argument of empty");
         }
@@ -36,36 +37,36 @@ public class FlatRemainingArgument<T> implements CommandArgument<List<T>> {
         this.argument = new ArrayList<>(argument);
     }
 
-    private CommandArgumentResult<? extends Collection<T>> parseAny(CommandContext context, int B) throws IOException {
+    private @NotNull CommandArgumentResult<? extends Collection<T>> parseAny(@NotNull CommandContext context, int B) throws IOException {
         IOException e1 = null;
         for (int A = 0; A < this.argument.size(); A++) {
             try {
                 return parse(context, B, this.argument.get(A));
             } catch (IOException e) {
-                if (A == 0) {
+                if (A==0) {
                     e1 = e;
                 }
             }
         }
-        if (e1 == null) {
+        if (e1==null) {
             //shouldnt be possible
             throw new IOException("Unknown error occurred");
         }
         throw e1;
     }
 
-    private <R extends Collection<T>> CommandArgumentResult<R> parse(CommandContext context, int B, CommandArgument<R> argument) throws IOException {
+    private <R extends Collection<T>> @NotNull CommandArgumentResult<R> parse(@NotNull CommandContext context, int B, @NotNull CommandArgument<R> argument) throws IOException {
         CommandArgumentContext<R> argumentContext = new CommandArgumentContext<>(argument, B, context.getCommand());
         return argument.parse(context, argumentContext);
     }
 
     @Override
-    public String getId() {
+    public @NotNull String getId() {
         return this.id;
     }
 
     @Override
-    public CommandArgumentResult<List<T>> parse(CommandContext context, CommandArgumentContext<List<T>> argument) throws IOException {
+    public @NotNull CommandArgumentResult<List<T>> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<List<T>> argument) throws IOException {
         int A = argument.getFirstArgument();
         List<T> list = new ArrayList<>();
         while (A < context.getCommand().length) {
@@ -77,7 +78,7 @@ public class FlatRemainingArgument<T> implements CommandArgument<List<T>> {
     }
 
     @Override
-    public Set<String> suggest(CommandContext context, CommandArgumentContext<List<T>> argument) {
+    public @NotNull Set<String> suggest(@NotNull CommandContext context, @NotNull CommandArgumentContext<List<T>> argument) {
         int A = argument.getFirstArgument();
         while (A < context.getCommand().length) {
             final int B = A;
@@ -96,7 +97,7 @@ public class FlatRemainingArgument<T> implements CommandArgument<List<T>> {
         return Collections.emptySet();
     }
 
-    private <R extends Collection<T>> Collection<String> suggest(CommandContext context, int A, CommandArgument<R> arg) {
+    private <R extends Collection<T>> @NotNull Collection<String> suggest(@NotNull CommandContext context, int A, @NotNull CommandArgument<R> arg) {
         CommandArgumentContext<R> argumentContext = new CommandArgumentContext<>(arg, A, context.getCommand());
         return arg.suggest(context, argumentContext);
     }

@@ -1,6 +1,8 @@
 package org.mose.command.arguments.id;
 
 import org.bukkit.Keyed;
+import org.bukkit.NamespacedKey;
+import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
 import org.mose.command.context.CommandArgumentContext;
@@ -19,9 +21,9 @@ import java.util.stream.Collectors;
  */
 public abstract class IdentifiableArgument<I extends Keyed> implements CommandArgument<I> {
 
-    private final String id;
+    private final @NotNull String id;
 
-    public IdentifiableArgument(String id) {
+    public IdentifiableArgument(@NotNull String id) {
         this.id = id;
     }
 
@@ -30,30 +32,44 @@ public abstract class IdentifiableArgument<I extends Keyed> implements CommandAr
      *
      * @return A collection of all possible values
      */
-    public abstract Collection<I> getAll();
+    public abstract @NotNull Collection<I> getAll();
 
     @Override
-    public String getId() {
+    public @NotNull String getId() {
         return this.id;
     }
 
     @Override
-    public CommandArgumentResult<I> parse(CommandContext context, CommandArgumentContext<I> argument) throws IOException {
+    public @NotNull CommandArgumentResult<I> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<I> argument) throws IOException {
         String id = context.getCommand()[argument.getFirstArgument()];
-        Optional<I> opIdent = this.getAll().stream().filter(a -> a.getKey().toString().equalsIgnoreCase(id)).findAny();
-        if (!opIdent.isPresent()) {
+        Optional<I> opIdent = this
+                .getAll()
+                .stream()
+                .filter(a -> a.getKey().toString().equalsIgnoreCase(id))
+                .findAny();
+        if (opIdent.isEmpty()) {
             throw new IOException("Invalid ID of '" + id + "'");
         }
         return CommandArgumentResult.from(argument, opIdent.get());
     }
 
     @Override
-    public Set<String> suggest(CommandContext context, CommandArgumentContext<I> argument) {
+    public @NotNull Set<String> suggest(@NotNull CommandContext context, @NotNull CommandArgumentContext<I> argument) {
         String id = context.getCommand()[argument.getFirstArgument()];
         return this.getAll()
                 .stream()
-                .filter(a -> a.getKey().toString().toLowerCase().startsWith(id.toLowerCase()) || a.getKey().getKey().toLowerCase().startsWith(id.toLowerCase()))
-                .map(a -> a.getKey().toString())
+                .map(Keyed::getKey)
+                .filter(a ->
+                        a
+                                .getKey()
+                                .toLowerCase()
+                                .startsWith(id.toLowerCase())
+                                ||
+                                a
+                                        .toString()
+                                        .toLowerCase()
+                                        .startsWith(id.toLowerCase()))
+                .map(NamespacedKey::toString)
                 .collect(Collectors.toSet());
     }
 }

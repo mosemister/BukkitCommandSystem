@@ -2,6 +2,7 @@ package org.mose.command.arguments.id;
 
 import org.bukkit.Material;
 import org.bukkit.Tag;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Modifier;
 import java.util.Collection;
@@ -14,12 +15,12 @@ import java.util.stream.Stream;
  */
 public class TagArgument extends IdentifiableArgument<Tag<Material>> {
 
-    public TagArgument(String id) {
+    public TagArgument(@NotNull String id) {
         super(id);
     }
 
     @Override
-    public Collection<Tag<Material>> getAll() {
+    public @NotNull Collection<Tag<Material>> getAll() {
         return Stream
                 .of(Tag.class.getFields())
                 .filter(f -> f.getType().isAssignableFrom(Tag.class))

@@ -1,6 +1,7 @@
 package org.mose.command.context;
 
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 import org.mose.command.ArgumentCommand;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
@@ -15,16 +16,16 @@ import java.util.*;
  */
 public class CommandContext {
 
-    private final String[] commands;
-    private final CommandSender source;
-    private final Set<ArgumentCommand> potentialCommands = new HashSet<>();
+    private final @NotNull String[] commands;
+    private final @NotNull CommandSender source;
+    private final @NotNull Set<ArgumentCommand> potentialCommands = new HashSet<>();
 
     /**
      * @param source   The command source who is running the command
      * @param commands The potential commands of the command context
      * @param command  The string arguments that the source wrote
      */
-    public CommandContext(CommandSender source, Set<ArgumentCommand> commands, String... command) {
+    public CommandContext(@NotNull CommandSender source, @NotNull Collection<ArgumentCommand> commands, String... command) {
         this.commands = command;
         this.potentialCommands.addAll(commands);
         this.source = source;
@@ -35,7 +36,7 @@ public class CommandContext {
      *
      * @return A String array of the raw string arguments
      */
-    public String[] getCommand() {
+    public @NotNull String[] getCommand() {
         return this.commands;
     }
 
@@ -44,7 +45,7 @@ public class CommandContext {
      *
      * @return The command sender
      */
-    public CommandSender getSource() {
+    public @NotNull CommandSender getSource() {
         return this.source;
     }
 
@@ -56,7 +57,7 @@ public class CommandContext {
      * @param command The command to target
      * @return A list of suggestions for the current context and provided command
      */
-    public Collection<String> getSuggestions(ArgumentCommand command) {
+    public @NotNull Collection<String> getSuggestions(@NotNull ArgumentCommand command) {
         List<CommandArgument<?>> arguments = command.getArguments();
         int commandArgument = 0;
         List<OptionalArgument<?>> optionalArguments = new ArrayList<>();
@@ -103,7 +104,7 @@ public class CommandContext {
      * @throws IllegalArgumentException If the provided id argument is not part of the command
      * @throws IllegalStateException    Argument requested is asking for string requirements then what is provided
      */
-    public <T> T getArgument(ArgumentCommand command, CommandArgument<T> id) {
+    public <T> @NotNull T getArgument(@NotNull ArgumentCommand command, @NotNull CommandArgument<T> id) {
         return this.getArgument(command, id.getId());
     }
 
@@ -117,7 +118,7 @@ public class CommandContext {
      * @throws IllegalArgumentException If the provided id argument is not part of the command
      * @throws IllegalStateException    Argument requested is asking for string requirements then what is provided
      */
-    public <T> T getArgument(ArgumentCommand command, String id) {
+    public <T> @NotNull T getArgument(@NotNull ArgumentCommand command, @NotNull String id) {
         List<CommandArgument<?>> arguments = command.getArguments();
         if (arguments.stream().noneMatch(a -> a.getId().equals(id))) {
             throw new IllegalArgumentException("Argument ID not found within command");
@@ -155,7 +156,7 @@ public class CommandContext {
      *
      * @return A set of all errors
      */
-    public Set<ErrorContext> getErrors() {
+    public @NotNull Set<ErrorContext> getErrors() {
         Set<ErrorContext> map = new HashSet<>();
         for (ArgumentCommand command : this.potentialCommands) {
             List<CommandArgument<?>> arguments = command.getArguments();
@@ -201,7 +202,7 @@ public class CommandContext {
      *
      * @return A single argument command, if none can be found then {@link Optional#empty()} will be used
      */
-    public Optional<ArgumentCommand> getCompleteCommand() {
+    public @NotNull Optional<ArgumentCommand> getCompleteCommand() {
         return this.potentialCommands.stream().filter(command -> {
             List<CommandArgument<?>> arguments = command.getArguments();
             int commandArgument = 0;
@@ -229,7 +230,7 @@ public class CommandContext {
      *
      * @return A set of all the potential commands
      */
-    public Set<ArgumentCommand> getPotentialCommands() {
+    public @NotNull Set<ArgumentCommand> getPotentialCommands() {
         Map<ArgumentCommand, Integer> map = new HashMap<>();
         this.potentialCommands.forEach(c -> {
             List<CommandArgument<?>> arguments = c.getArguments();
@@ -271,12 +272,12 @@ public class CommandContext {
         return set;
     }
 
-    private <T> CommandArgumentResult<T> parse(CommandArgument<T> arg, int commandArgument) throws IOException {
+    private <T> @NotNull CommandArgumentResult<T> parse(@NotNull CommandArgument<T> arg, int commandArgument) throws IOException {
         CommandArgumentContext<T> argContext = new CommandArgumentContext<>(arg, commandArgument, this.commands);
         return arg.parse(this, argContext);
     }
 
-    private <T> Collection<String> suggest(CommandArgument<T> arg, int commandArgument) {
+    private <T> @NotNull Collection<String> suggest(@NotNull CommandArgument<T> arg, int commandArgument) {
         if (this.commands.length <= commandArgument) {
             return Collections.emptySet();
         }

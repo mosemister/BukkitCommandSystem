@@ -1,5 +1,7 @@
 package org.mose.command;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * A argument for {@link ArgumentCommand}. This is designed to parse the target string argument(s) into a single object
  * for ease of use.
@@ -15,14 +17,14 @@ public interface CommandArgument<T> extends ParseCommandArgument<T>, SuggestComm
      *
      * @return a string Id
      */
-    String getId();
+    @NotNull String getId();
 
     /**
      * Gets the usage of the argument
      *
      * @return a string version of the usage of the argument
      */
-    default String getUsage() {
+    default @NotNull String getUsage() {
         return "<" + this.getId() + ">";
     }
 

@@ -1,5 +1,6 @@
 package org.mose.command.arguments.operation;
 
+import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
 import org.mose.command.context.CommandArgumentContext;
@@ -13,16 +14,16 @@ import java.util.stream.Stream;
 
 public class ExactArgument implements CommandArgument<String> {
 
-    private final String id;
-    private final String[] lookup;
+    private final @NotNull String id;
+    private final @NotNull String[] lookup;
     private final boolean caseSens;
 
-    public ExactArgument(String id) {
+    public ExactArgument(@NotNull String id) {
         this(id, false, id);
     }
 
-    public ExactArgument(String id, boolean caseSens, String... lookup) {
-        if (lookup.length == 0) {
+    public ExactArgument(@NotNull String id, boolean caseSens, @NotNull String... lookup) {
+        if (lookup.length==0) {
             throw new IllegalArgumentException("Lookup cannot be []");
         }
         this.id = id;
@@ -30,16 +31,16 @@ public class ExactArgument implements CommandArgument<String> {
         this.caseSens = caseSens;
     }
 
-    public String[] getLookup() {
+    public @NotNull String[] getLookup() {
         return this.lookup;
     }
 
     @Override
-    public String getId() {
+    public @NotNull String getId() {
         return this.id;
     }
 
-    private boolean anyMatch(String arg) {
+    private boolean anyMatch(@NotNull String arg) {
         for (String a : this.lookup) {
             if ((this.caseSens && a.equals(arg)) || (!this.caseSens && a.equalsIgnoreCase(arg))) {
                 return true;
@@ -49,7 +50,7 @@ public class ExactArgument implements CommandArgument<String> {
     }
 
     @Override
-    public CommandArgumentResult<String> parse(CommandContext context, CommandArgumentContext<String> argument) throws IOException {
+    public @NotNull CommandArgumentResult<String> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<String> argument) throws IOException {
         String arg = context.getCommand()[argument.getFirstArgument()];
         if (anyMatch(arg)) {
             return CommandArgumentResult.from(argument, arg);
@@ -58,7 +59,7 @@ public class ExactArgument implements CommandArgument<String> {
     }
 
     @Override
-    public Set<String> suggest(CommandContext context, CommandArgumentContext<String> argument) {
+    public @NotNull Set<String> suggest(@NotNull CommandContext context, @NotNull CommandArgumentContext<String> argument) {
         String arg = "";
         if (context.getCommand().length > argument.getFirstArgument()) {
             arg = context.getCommand()[argument.getFirstArgument()];
@@ -73,7 +74,7 @@ public class ExactArgument implements CommandArgument<String> {
     }
 
     @Override
-    public String getUsage() {
+    public @NotNull String getUsage() {
         return "<" + Stream.of(this.lookup).map(t -> "\"" + t + "\"").collect(Collectors.joining()) + ">";
     }
 }

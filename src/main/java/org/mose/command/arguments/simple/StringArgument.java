@@ -1,5 +1,6 @@
 package org.mose.command.arguments.simple;
 
+import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
 import org.mose.command.context.CommandArgumentContext;
@@ -11,26 +12,26 @@ import java.util.Set;
 
 public class StringArgument implements CommandArgument<String> {
 
-    private final String id;
+    private final @NotNull String id;
 
-    public StringArgument(String id) {
+    public StringArgument(@NotNull String id) {
         this.id = id;
     }
 
     @Override
-    public String getId() {
+    public @NotNull String getId() {
         return this.id;
     }
 
     @Override
-    public CommandArgumentResult<String> parse(CommandContext context, CommandArgumentContext<String> argument) throws IOException {
+    public @NotNull CommandArgumentResult<String> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<String> argument) throws IOException {
         String text = context.getCommand()[argument.getFirstArgument()];
         return CommandArgumentResult.from(argument, text);
 
     }
 
     @Override
-    public Set<String> suggest(CommandContext commandContext, CommandArgumentContext<String> argument) {
+    public @NotNull Set<String> suggest(@NotNull CommandContext commandContext, @NotNull CommandArgumentContext<String> argument) {
         return Collections.emptySet();
     }
 }

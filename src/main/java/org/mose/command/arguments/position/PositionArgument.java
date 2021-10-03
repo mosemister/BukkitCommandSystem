@@ -1,6 +1,7 @@
 package org.mose.command.arguments.position;
 
 import org.bukkit.World;
+import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
 import org.mose.command.context.CommandArgumentContext;
@@ -12,10 +13,10 @@ import java.util.Set;
 
 public abstract class PositionArgument<N extends Number, P> implements CommandArgument<P> {
 
-    private final String id;
-    private final CommandArgument<N> positionArgument;
+    private final @NotNull String id;
+    private final @NotNull CommandArgument<N> positionArgument;
 
-    public PositionArgument(String id, CommandArgument<N> argument) {
+    public PositionArgument(@NotNull String id, @NotNull CommandArgument<N> argument) {
         this.id = id;
         this.positionArgument = argument;
     }
@@ -23,12 +24,12 @@ public abstract class PositionArgument<N extends Number, P> implements CommandAr
     public abstract P build(World extent, N x, N y, N z);
 
     @Override
-    public String getId() {
+    public @NotNull String getId() {
         return this.id;
     }
 
     @Override
-    public CommandArgumentResult<P> parse(CommandContext context, CommandArgumentContext<P> argument) throws IOException {
+    public @NotNull CommandArgumentResult<P> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<P> argument) throws IOException {
         int firstPosition = argument.getFirstArgument();
         WorldArgument worldArg = new WorldArgument("");
         CommandArgumentResult<World> extent = worldArg.parse(context, new CommandArgumentContext<>(worldArg, firstPosition, context.getCommand()));
@@ -40,7 +41,7 @@ public abstract class PositionArgument<N extends Number, P> implements CommandAr
     }
 
     @Override
-    public Set<String> suggest(CommandContext commandContext, CommandArgumentContext<P> argument) {
+    public @NotNull Set<String> suggest(@NotNull CommandContext commandContext, @NotNull CommandArgumentContext<P> argument) {
         return Collections.emptySet();
     }
 }

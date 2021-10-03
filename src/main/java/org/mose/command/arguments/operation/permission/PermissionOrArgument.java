@@ -1,6 +1,7 @@
 package org.mose.command.arguments.operation.permission;
 
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
 import org.mose.command.ParseCommandArgument;
@@ -20,10 +21,10 @@ import java.util.function.Predicate;
  */
 public class PermissionOrArgument<T> implements CommandArgument<T> {
 
-    private final String id;
-    private final Predicate<CommandSender> permission;
-    private final ParseCommandArgument<T> with;
-    private final ParseCommandArgument<T> or;
+    private final @NotNull String id;
+    private final @NotNull Predicate<CommandSender> permission;
+    private final @NotNull ParseCommandArgument<T> with;
+    private final @NotNull ParseCommandArgument<T> or;
 
     /**
      * @param id         The id of the command argument
@@ -31,7 +32,7 @@ public class PermissionOrArgument<T> implements CommandArgument<T> {
      * @param with       The command argument to use if the user has permission
      * @param or         The command argument to use if the user doesn't have permission
      */
-    public PermissionOrArgument(String id, Predicate<CommandSender> permission, ParseCommandArgument<T> with, ParseCommandArgument<T> or) {
+    public PermissionOrArgument(@NotNull String id, @NotNull Predicate<CommandSender> permission, @NotNull ParseCommandArgument<T> with, @NotNull ParseCommandArgument<T> or) {
         this.id = id;
         this.permission = permission;
         this.with = with;
@@ -39,12 +40,12 @@ public class PermissionOrArgument<T> implements CommandArgument<T> {
     }
 
     @Override
-    public String getId() {
+    public @NotNull String getId() {
         return this.id;
     }
 
     @Override
-    public CommandArgumentResult<T> parse(CommandContext context, CommandArgumentContext<T> argument) throws IOException {
+    public @NotNull CommandArgumentResult<T> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<T> argument) throws IOException {
         if (this.permission.test(context.getSource())) {
             return this.with.parse(context, argument);
         }
@@ -52,7 +53,7 @@ public class PermissionOrArgument<T> implements CommandArgument<T> {
     }
 
     @Override
-    public Collection<String> suggest(CommandContext context, CommandArgumentContext<T> argument) {
+    public @NotNull Collection<String> suggest(@NotNull CommandContext context, @NotNull CommandArgumentContext<T> argument) {
         if (this.permission.test(context.getSource())) {
             if (this.with instanceof SuggestCommandArgument) {
                 return ((SuggestCommandArgument<T>) this.with).suggest(context, argument);

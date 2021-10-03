@@ -32,7 +32,7 @@ public class BukkitCommandWrapper implements TabExecutor {
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, String[] strings) {
         CommandContext commandContext = new CommandContext(commandSender, this.commands, strings);
         Optional<ArgumentCommand> opCommand = commandContext.getCompleteCommand();
-        if (!opCommand.isPresent()) {
+        if (opCommand.isEmpty()) {
             Set<ErrorContext> errors = commandContext.getErrors();
             if (!errors.isEmpty()) {
                 ErrorContext error = errors.iterator().next();

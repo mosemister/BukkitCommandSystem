@@ -1,5 +1,6 @@
 package org.mose.command.arguments.operation;
 
+import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
 import org.mose.command.ParseCommandArgument;
@@ -13,42 +14,42 @@ public class OptionalArgument<T> implements CommandArgument<T> {
 
     public static class WrappedParser<T> implements ParseCommandArgument<T> {
 
-        private final T value;
+        private final @NotNull T value;
 
-        public WrappedParser(T value) {
+        public WrappedParser(@NotNull T value) {
             this.value = value;
         }
 
         @Override
-        public CommandArgumentResult<T> parse(CommandContext context, CommandArgumentContext<T> argument) {
+        public @NotNull CommandArgumentResult<T> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<T> argument) {
             return CommandArgumentResult.from(argument, 0, this.value);
         }
     }
 
-    private final CommandArgument<T> arg;
-    private final ParseCommandArgument<T> value;
+    private final @NotNull CommandArgument<T> arg;
+    private final @NotNull ParseCommandArgument<T> value;
 
-    public OptionalArgument(CommandArgument<T> arg, T value) {
+    public OptionalArgument(@NotNull CommandArgument<T> arg, @NotNull T value) {
         this(arg, new WrappedParser<>(value));
     }
 
-    public OptionalArgument(CommandArgument<T> arg, ParseCommandArgument<T> value) {
+    public OptionalArgument(@NotNull CommandArgument<T> arg, @NotNull ParseCommandArgument<T> value) {
         this.arg = arg;
         this.value = value;
     }
 
-    public CommandArgument<T> getOriginalArgument() {
+    public @NotNull CommandArgument<T> getOriginalArgument() {
         return this.arg;
     }
 
     @Override
-    public String getId() {
+    public @NotNull String getId() {
         return this.arg.getId();
     }
 
     @Override
-    public CommandArgumentResult<T> parse(CommandContext context, CommandArgumentContext<T> argument) throws IOException {
-        if (context.getCommand().length == argument.getFirstArgument()) {
+    public @NotNull CommandArgumentResult<T> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<T> argument) throws IOException {
+        if (context.getCommand().length==argument.getFirstArgument()) {
             return CommandArgumentResult.from(argument, 0, this.value.parse(context, argument).getValue());
         }
         try {
@@ -59,12 +60,12 @@ public class OptionalArgument<T> implements CommandArgument<T> {
     }
 
     @Override
-    public Collection<String> suggest(CommandContext commandContext, CommandArgumentContext<T> argument) {
+    public @NotNull Collection<String> suggest(@NotNull CommandContext commandContext, @NotNull CommandArgumentContext<T> argument) {
         return this.arg.suggest(commandContext, argument);
     }
 
     @Override
-    public String getUsage() {
+    public @NotNull String getUsage() {
         String original = this.getOriginalArgument().getUsage();
         return "[" + original.substring(1, original.length() - 1) + "]";
     }

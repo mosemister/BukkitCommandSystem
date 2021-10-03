@@ -3,6 +3,7 @@ package org.mose.command.arguments.source;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
 import org.mose.command.context.CommandArgumentContext;
@@ -15,26 +16,26 @@ import java.util.stream.Collectors;
 
 public class PlayerArgument implements CommandArgument<Player> {
 
-    private final String id;
+    private final @NotNull String id;
 
-    public PlayerArgument(String id) {
+    public PlayerArgument(@NotNull String id) {
         this.id = id;
     }
 
     @Override
-    public String getId() {
+    public @NotNull String getId() {
         return this.id;
     }
 
     @Override
-    public CommandArgumentResult<Player> parse(CommandContext context, CommandArgumentContext<Player> argument) throws IOException {
+    public @NotNull CommandArgumentResult<Player> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<Player> argument) throws IOException {
         String command = context.getCommand()[argument.getFirstArgument()];
         Optional<? extends Player> opPlayer = Bukkit
                 .getOnlinePlayers()
                 .stream()
                 .filter(p -> p.getName().equalsIgnoreCase(command))
                 .findFirst();
-        if (!opPlayer.isPresent()) {
+        if (opPlayer.isEmpty()) {
             throw new IOException("Player is not online");
         }
         return CommandArgumentResult.from(argument, opPlayer.get());
@@ -42,7 +43,7 @@ public class PlayerArgument implements CommandArgument<Player> {
     }
 
     @Override
-    public Set<String> suggest(CommandContext commandContext, CommandArgumentContext<Player> argument) {
+    public @NotNull Set<String> suggest(@NotNull CommandContext commandContext, @NotNull CommandArgumentContext<Player> argument) {
         String command = commandContext.getCommand()[argument.getFirstArgument()];
         return Bukkit
                 .getOnlinePlayers()

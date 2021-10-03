@@ -1,5 +1,6 @@
 package org.mose.command.arguments.simple;
 
+import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
 import org.mose.command.context.CommandArgumentContext;
@@ -15,15 +16,15 @@ import java.util.stream.Stream;
 
 public class EnumArgument<E extends Enum<?>> implements CommandArgument<E> {
 
-    private final String id;
-    private final Class<E> clazz;
+    private final @NotNull String id;
+    private final @NotNull Class<E> clazz;
 
-    public EnumArgument(String id, Class<E> clazz) {
+    public EnumArgument(@NotNull String id, @NotNull Class<E> clazz) {
         this.id = id;
         this.clazz = clazz;
     }
 
-    private E[] getValues() throws NoSuchFieldException, IllegalAccessException {
+    private @NotNull E[] getValues() throws NoSuchFieldException, IllegalAccessException {
         Field f = this.clazz.getDeclaredField("$VALUES");
         f.setAccessible(true);
         Object o = f.get(null);
@@ -31,12 +32,12 @@ public class EnumArgument<E extends Enum<?>> implements CommandArgument<E> {
     }
 
     @Override
-    public String getId() {
+    public @NotNull String getId() {
         return this.id;
     }
 
     @Override
-    public CommandArgumentResult<E> parse(CommandContext context, CommandArgumentContext<E> argument) throws IOException {
+    public @NotNull CommandArgumentResult<E> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<E> argument) throws IOException {
         String next = context.getCommand()[argument.getFirstArgument()];
         try {
             Optional<E> opValue = Stream.of(this.getValues()).filter(n -> n.name().equalsIgnoreCase(next)).findFirst();
@@ -50,7 +51,7 @@ public class EnumArgument<E extends Enum<?>> implements CommandArgument<E> {
     }
 
     @Override
-    public Set<String> suggest(CommandContext commandContext, CommandArgumentContext<E> argument) {
+    public @NotNull Set<String> suggest(@NotNull CommandContext commandContext, @NotNull CommandArgumentContext<E> argument) {
         String peek = commandContext.getCommand()[argument.getFirstArgument()];
         try {
             return Stream.of(this.getValues()).map(e -> e.name()).filter(n -> n.startsWith(peek.toUpperCase())).collect(Collectors.toSet());

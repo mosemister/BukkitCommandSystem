@@ -1,31 +1,32 @@
 package org.mose.command.context;
 
+import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 
 public class CommandArgumentContext<T> {
 
-    private final CommandArgument<T> argument;
+    private final @NotNull CommandArgument<T> argument;
     private int firstArgument;
-    private String[] command;
+    private @NotNull String[] command;
 
-    public CommandArgumentContext(CommandArgument<T> argument, int firstArgument, String... command) {
+    public CommandArgumentContext(@NotNull CommandArgument<T> argument, int firstArgument, @NotNull String... command) {
         this.argument = argument;
         this.firstArgument = firstArgument;
         this.command = command;
     }
 
-    public CommandArgument<T> getArgument() {
+    public @NotNull CommandArgument<T> getArgument() {
         return this.argument;
     }
 
-    public String[] getRemainingArguments() {
+    public @NotNull String[] getRemainingArguments() {
         int last = this.command.length;
         String[] ret = new String[last - this.firstArgument];
         System.arraycopy(this.command, this.firstArgument, ret, 0, ret.length);
         return ret;
     }
 
-    public String getFocusArgument() {
+    public @NotNull String getFocusArgument() {
         return this.command[this.firstArgument];
     }
 
@@ -33,7 +34,7 @@ public class CommandArgumentContext<T> {
         return this.firstArgument;
     }
 
-    public void setCommand(String... args) {
+    public void setCommand(@NotNull String... args) {
         this.command = args;
     }
 

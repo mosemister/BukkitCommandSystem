@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
 import org.mose.command.context.CommandArgumentContext;
@@ -19,23 +20,23 @@ import java.util.stream.Collectors;
  */
 public class WorldArgument implements CommandArgument<World> {
 
-    private final String id;
+    private final @NotNull String id;
 
-    public WorldArgument(String id) {
+    public WorldArgument(@NotNull String id) {
         this.id = id;
     }
 
     @Override
-    public String getId() {
+    public @NotNull String getId() {
         return this.id;
     }
 
     @Override
-    public CommandArgumentResult<World> parse(CommandContext context, CommandArgumentContext<World> argument) throws IOException {
+    public @NotNull CommandArgumentResult<World> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<World> argument) throws IOException {
         String worldName = context.getCommand()[argument.getFirstArgument()];
         World world = Bukkit.getWorld(worldName);
         ;
-        if (world != null) {
+        if (world!=null) {
             return CommandArgumentResult.from(argument, world);
         }
         if (context.getSource() instanceof Player) {
@@ -50,8 +51,13 @@ public class WorldArgument implements CommandArgument<World> {
     }
 
     @Override
-    public Set<String> suggest(CommandContext commandContext, CommandArgumentContext<World> argument) {
+    public @NotNull Set<String> suggest(CommandContext commandContext, CommandArgumentContext<World> argument) {
         String worldPeek = commandContext.getCommand()[argument.getFirstArgument()];
-        return Bukkit.getWorlds().stream().map(World::getName).filter(w -> w.toLowerCase().startsWith(worldPeek)).collect(Collectors.toSet());
+        return Bukkit
+                .getWorlds()
+                .stream()
+                .map(World::getName)
+                .filter(w -> w.toLowerCase().startsWith(worldPeek))
+                .collect(Collectors.toSet());
     }
 }
