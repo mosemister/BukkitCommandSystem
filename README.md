@@ -39,29 +39,7 @@ The basic idea is that all the parsing is handled within its own class and then 
   <version>1.1.0</version>
   <scope>compile</scope>
 </dependency>
-=======
-## basic command
-
-This is the implementation for a command which gives a player the specified argument
-```java
-//coming soon
 ```
-
-Note how the need to parse the string argument to a Material. This command would also suggest all item materials to the player in ID form. 
-
-//todo explain how it works
-
-# arguments
-
-## custom arguments
-
-# package
-
-## maven
-
-
-
-
 
 ## gradle
 
