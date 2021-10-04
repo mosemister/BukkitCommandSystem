@@ -44,8 +44,6 @@ The basic idea is that all the parsing is handled within its own class and then 
 
 This is the implementation for a command which gives a player the specified item argument
 ```java
-package org.mose.command.temp;
-
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
