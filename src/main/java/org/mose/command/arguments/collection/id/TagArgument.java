@@ -1,4 +1,4 @@
-package org.mose.command.arguments.id;
+package org.mose.command.arguments.collection.id;
 
 import org.bukkit.Material;
 import org.bukkit.Tag;

@@ -1,4 +1,4 @@
-package org.mose.command.arguments.id;
+package org.mose.command.arguments.collection.id;
 
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -22,9 +23,15 @@ import java.util.stream.Collectors;
 public abstract class IdentifiableArgument<I extends Keyed> implements CommandArgument<I> {
 
     private final @NotNull String id;
+    private final @NotNull Predicate<I> predicate;
 
     public IdentifiableArgument(@NotNull String id) {
+        this(id, (key) -> true);
+    }
+
+    public IdentifiableArgument(@NotNull String id, @NotNull Predicate<I> filter) {
         this.id = id;
+        this.predicate = filter;
     }
 
     /**
@@ -45,6 +52,7 @@ public abstract class IdentifiableArgument<I extends Keyed> implements CommandAr
         Optional<I> opIdent = this
                 .getAll()
                 .stream()
+                .filter(this.predicate)
                 .filter(a -> a.getKey().toString().equalsIgnoreCase(id))
                 .findAny();
         if (opIdent.isEmpty()) {
@@ -58,6 +66,7 @@ public abstract class IdentifiableArgument<I extends Keyed> implements CommandAr
         String id = context.getCommand()[argument.getFirstArgument()];
         return this.getAll()
                 .stream()
+                .filter(this.predicate)
                 .map(Keyed::getKey)
                 .filter(a ->
                         a

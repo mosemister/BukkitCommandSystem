@@ -1,4 +1,4 @@
-package org.mose.command.arguments.source;
+package org.mose.command.arguments.collection.source;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
@@ -14,21 +14,24 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class PlayerArgument implements CommandArgument<Player> {
-
-    private final @NotNull String id;
+/**
+ * Provides a online user argument to the user
+ */
+public record PlayerArgument(@NotNull String id) implements CommandArgument<Player> {
 
     public PlayerArgument(@NotNull String id) {
         this.id = id;
     }
 
     @Override
-    public @NotNull String getId() {
+    public @NotNull
+    String getId() {
         return this.id;
     }
 
     @Override
-    public @NotNull CommandArgumentResult<Player> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<Player> argument) throws IOException {
+    public @NotNull
+    CommandArgumentResult<Player> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<Player> argument) throws IOException {
         String command = context.getCommand()[argument.getFirstArgument()];
         Optional<? extends Player> opPlayer = Bukkit
                 .getOnlinePlayers()
@@ -43,7 +46,8 @@ public class PlayerArgument implements CommandArgument<Player> {
     }
 
     @Override
-    public @NotNull Set<String> suggest(@NotNull CommandContext commandContext, @NotNull CommandArgumentContext<Player> argument) {
+    public @NotNull
+    Set<String> suggest(@NotNull CommandContext commandContext, @NotNull CommandArgumentContext<Player> argument) {
         String command = commandContext.getCommand()[argument.getFirstArgument()];
         return Bukkit
                 .getOnlinePlayers()
