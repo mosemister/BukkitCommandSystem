@@ -18,21 +18,21 @@ import java.util.stream.Collectors;
  * Gets a world from a single argument, if the source of the command is locatable then this command
  * becomes optional whereby if the string argument is not provided then it will use the world the source is in.
  */
-public class WorldArgument implements CommandArgument<World> {
-
-    private final @NotNull String id;
+public record WorldArgument(@NotNull String id) implements CommandArgument<World> {
 
     public WorldArgument(@NotNull String id) {
         this.id = id;
     }
 
     @Override
-    public @NotNull String getId() {
+    public @NotNull
+    String getId() {
         return this.id;
     }
 
     @Override
-    public @NotNull CommandArgumentResult<World> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<World> argument) throws IOException {
+    public @NotNull
+    CommandArgumentResult<World> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<World> argument) throws IOException {
         String worldName = context.getCommand()[argument.getFirstArgument()];
         World world = Bukkit.getWorld(worldName);
         ;
@@ -51,7 +51,8 @@ public class WorldArgument implements CommandArgument<World> {
     }
 
     @Override
-    public @NotNull Set<String> suggest(CommandContext commandContext, CommandArgumentContext<World> argument) {
+    public @NotNull
+    Set<String> suggest(CommandContext commandContext, CommandArgumentContext<World> argument) {
         String worldPeek = commandContext.getCommand()[argument.getFirstArgument()];
         return Bukkit
                 .getWorlds()

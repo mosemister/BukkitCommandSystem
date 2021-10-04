@@ -1,6 +1,7 @@
 package org.mose.command.arguments.operation;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
 import org.mose.command.ParseCommandArgument;
@@ -9,19 +10,35 @@ import org.mose.command.context.CommandContext;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Optional;
 
+/**
+ * The optional argument is designed to give the user a optional argument to give more detail,
+ * this could be that the user needs to specify a online player, however this could be optional
+ * if the user is already a player, whereby the optional value would be the user player.
+ * <p>
+ * One of the limits of Optional is that it must return a value, this can be {@link Optional#empty}
+ *
+ * @param <T> The type
+ */
 public class OptionalArgument<T> implements CommandArgument<T> {
 
-    public static class WrappedParser<T> implements ParseCommandArgument<T> {
+    /**
+     * If the Optional not provided value is known, then you can use
+     * a WrappedParser to pass the argument to the OptionalArgument
+     * if needed
+     *
+     * @param <T> The type
+     */
+    public record WrappedParser<T>(@Nullable T value) implements ParseCommandArgument<T> {
 
-        private final @NotNull T value;
-
-        public WrappedParser(@NotNull T value) {
+        public WrappedParser(@Nullable T value) {
             this.value = value;
         }
 
         @Override
-        public @NotNull CommandArgumentResult<T> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<T> argument) {
+        public @NotNull
+        CommandArgumentResult<T> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<T> argument) {
             return CommandArgumentResult.from(argument, 0, this.value);
         }
     }
@@ -29,15 +46,32 @@ public class OptionalArgument<T> implements CommandArgument<T> {
     private final @NotNull CommandArgument<T> arg;
     private final @NotNull ParseCommandArgument<T> value;
 
+    /**
+     * Constructor
+     *
+     * @param arg   The command argument
+     * @param value The raw value if failed
+     */
     public OptionalArgument(@NotNull CommandArgument<T> arg, @NotNull T value) {
         this(arg, new WrappedParser<>(value));
     }
 
+    /**
+     * Constructor
+     *
+     * @param arg   The command argument
+     * @param value the argument processor to use if the argument failed
+     */
     public OptionalArgument(@NotNull CommandArgument<T> arg, @NotNull ParseCommandArgument<T> value) {
         this.arg = arg;
         this.value = value;
     }
 
+    /**
+     * Gets the original argument to compare
+     *
+     * @return The original argument
+     */
     public @NotNull CommandArgument<T> getOriginalArgument() {
         return this.arg;
     }

@@ -14,6 +14,14 @@ import java.io.IOException;
  */
 public interface ParseCommandArgument<T> {
 
+    /**
+     * Parses the command argument
+     *
+     * @param context  The context of the command
+     * @param argument The argument context from the command
+     * @return A CommandArgumentResult of the argument
+     * @throws IOException if the argument cannot be processed, then it will throw a IOException of what went wrong
+     */
     @NotNull CommandArgumentResult<T> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<T> argument) throws IOException;
 
 }

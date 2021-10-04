@@ -10,6 +10,12 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * The flat remaining argument is designed to get all the remaining arguments whereby the
+ * argument return a list. This Flat version combines all the commands argument results into
+ * a list for ease of use
+ * @param <T> The common type from all arguments
+ */
 public class FlatRemainingArgument<T> implements CommandArgument<List<T>> {
 
     private final @NotNull String id;
@@ -20,15 +26,31 @@ public class FlatRemainingArgument<T> implements CommandArgument<List<T>> {
         throw new RuntimeException("Flat Remaining Argument requires at least one argument");
     }
 
+    /**
+     * This one is mainly used with the {@link MappedArgumentWrapper}. This just wraps the
+     * provided argument with the FlatRemainingArgument, maintaining the id of the provided
+     * argument
+     * @param argument A single argument which returns a collection.
+     */
     public FlatRemainingArgument(@NotNull CommandArgument<? extends Collection<T>> argument) {
         this(argument.getId(), argument);
     }
 
+    /**
+     * Constructor
+     * @param id The Id of the command argument
+     * @param argument The arguments to compare against in var-array form
+     */
     @SafeVarargs
     public FlatRemainingArgument(@NotNull String id, @NotNull CommandArgument<? extends Collection<T>>... argument) {
         this(id, Arrays.asList(argument));
     }
 
+    /**
+     * Constructor
+     * @param id The Id of the command argument
+     * @param argument The argument to compare against in Collection
+     */
     public FlatRemainingArgument(@NotNull String id, @NotNull Collection<CommandArgument<? extends Collection<T>>> argument) {
         if (argument.isEmpty()) {
             throw new IllegalArgumentException("Remaining Argument cannot have a argument of empty");

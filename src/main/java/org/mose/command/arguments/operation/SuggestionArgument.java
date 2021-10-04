@@ -9,6 +9,11 @@ import org.mose.command.context.CommandContext;
 
 import java.io.IOException;
 
+/**
+ * This allows you to give extra suggestions to a command argument.
+ *
+ * @param <A> The return type
+ */
 public abstract class SuggestionArgument<A> implements CommandArgument<A> {
 
     protected final @NotNull ParseCommandArgument<A> argument;

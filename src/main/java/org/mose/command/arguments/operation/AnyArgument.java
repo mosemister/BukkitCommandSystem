@@ -14,6 +14,12 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * AnyArgument is used for if you have a collection of possible acceptable arguments
+ * with one of those arguments being passed to the command system
+ *
+ * @param <A> The type of the common object
+ */
 public class AnyArgument<A> implements CommandArgument<A> {
 
     private final @NotNull String id;
@@ -21,15 +27,39 @@ public class AnyArgument<A> implements CommandArgument<A> {
     private final @NotNull BiFunction<Collection<A>, String, A> fromString;
     private final @NotNull BiFunction<CommandContext, CommandArgumentContext<A>, Collection<A>> supply;
 
+    /**
+     * Constructor
+     *
+     * @param id         The id of the command
+     * @param toString   The conversion from the object to string that the user enters
+     * @param fromString The conversion from string to the object. Return null if not present
+     * @param array      The array of objects
+     */
     @SafeVarargs
     public AnyArgument(@NotNull String id, @NotNull Function<A, String> toString, @NotNull BiFunction<Collection<A>, String, A> fromString, A... array) {
         this(id, toString, fromString, Arrays.asList(array));
     }
 
+    /**
+     * Constructor
+     *
+     * @param id         The id of the command
+     * @param toString   The conversion from the object to string that the user enters
+     * @param fromString The conversion from string to the object, return null if not present
+     * @param collection The array of objects
+     */
     public AnyArgument(@NotNull String id, @NotNull Function<A, String> toString, @NotNull BiFunction<Collection<A>, String, A> fromString, @NotNull Collection<A> collection) {
         this(id, toString, fromString, (c, a) -> collection);
     }
 
+    /**
+     * Constructor
+     *
+     * @param id         The id of the command
+     * @param toString   The conversion from the object to string that the user enters
+     * @param fromString The conversion from string to the object
+     * @param supply     A BiFunction that supplies the command argument for the collection to be created just in time
+     */
     public AnyArgument(@NotNull String id, @NotNull Function<A, String> toString, @NotNull BiFunction<Collection<A>, String, A> fromString, @NotNull BiFunction<CommandContext, CommandArgumentContext<A>, @NotNull Collection<A>> supply) {
         this.id = id;
         this.toString = toString;

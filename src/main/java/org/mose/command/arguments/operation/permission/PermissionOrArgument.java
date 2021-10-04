@@ -19,12 +19,10 @@ import java.util.function.Predicate;
  *
  * @param <T> The returning class type
  */
-public class PermissionOrArgument<T> implements CommandArgument<T> {
-
-    private final @NotNull String id;
-    private final @NotNull Predicate<CommandSender> permission;
-    private final @NotNull ParseCommandArgument<T> with;
-    private final @NotNull ParseCommandArgument<T> or;
+public record PermissionOrArgument<T>(@NotNull String id,
+                                      @NotNull Predicate<CommandSender> permission,
+                                      @NotNull ParseCommandArgument<T> with,
+                                      @NotNull ParseCommandArgument<T> or) implements CommandArgument<T> {
 
     /**
      * @param id         The id of the command argument
@@ -40,12 +38,14 @@ public class PermissionOrArgument<T> implements CommandArgument<T> {
     }
 
     @Override
-    public @NotNull String getId() {
+    public @NotNull
+    String getId() {
         return this.id;
     }
 
     @Override
-    public @NotNull CommandArgumentResult<T> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<T> argument) throws IOException {
+    public @NotNull
+    CommandArgumentResult<T> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<T> argument) throws IOException {
         if (this.permission.test(context.getSource())) {
             return this.with.parse(context, argument);
         }
@@ -53,7 +53,8 @@ public class PermissionOrArgument<T> implements CommandArgument<T> {
     }
 
     @Override
-    public @NotNull Collection<String> suggest(@NotNull CommandContext context, @NotNull CommandArgumentContext<T> argument) {
+    public @NotNull
+    Collection<String> suggest(@NotNull CommandContext context, @NotNull CommandArgumentContext<T> argument) {
         if (this.permission.test(context.getSource())) {
             if (this.with instanceof SuggestCommandArgument) {
                 return ((SuggestCommandArgument<T>) this.with).suggest(context, argument);

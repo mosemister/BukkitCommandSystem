@@ -11,6 +11,12 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
+/**
+ * Common interface for all position based arguments (aka, x, y, z, world)
+ *
+ * @param <N> The number type of the xyz
+ * @param <P> The returning type of argument
+ */
 public abstract class PositionArgument<N extends Number, P> implements CommandArgument<P> {
 
     private final @NotNull String id;
@@ -21,7 +27,16 @@ public abstract class PositionArgument<N extends Number, P> implements CommandAr
         this.positionArgument = argument;
     }
 
-    public abstract P build(World extent, N x, N y, N z);
+    /**
+     * Builds the argument object based upon the input
+     *
+     * @param extent The world the user entered
+     * @param x      The x position the user entered
+     * @param y      The y position the user entered
+     * @param z      The z position the user entered
+     * @return The return object
+     */
+    public abstract P build(@NotNull World extent, @NotNull N x, @NotNull N y, @NotNull N z);
 
     @Override
     public @NotNull String getId() {
