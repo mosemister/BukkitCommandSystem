@@ -7,6 +7,39 @@ You get the argument objects already parsed making it hassle free to develop com
 
 Unlike many other command systems that attempt to update the Bukkits original command system that they still use and has been the same since version 1. This command system doesn't use any NMS or craftbukkit calls meaning that projects such as Glowstone, Cauldron, etc will work without those developers needing to reroute the calls. 
 
+
+## Features
+
+- Quickly write commands
+- Automatic help page
+- Automatic permission management for child commands
+- Automatic tab completion
+- Removes common processing
+- Comes with common arguments
+- Ability to create custom arguments
+
+
+## How do it work
+
+The basic idea is that all the parsing is handled within its own class and then passes you the parsed object from that class. The handling of suggestions is also handled within this class too. 
+
+# package
+
+## maven
+
+```xml
+<dependency>
+  <groupId>org.mose.command</groupId>
+  <artifactId>bukkit-command-system</artifactId>
+  <version>1.1.0</version>
+  <scope>compile</scope>
+</dependency>
+```
+
+## gradle
+
+``ToDo``
+
 ## basic command
 
 This is the implementation for a command which gives a player the specified item argument
@@ -113,28 +146,8 @@ public class TempClass implements TabExecutor {
 
 ```
 
-//todo explain how it works
+Note how in regular Bukkit you need to repeate code, one for the execution and the other for the suggestion, also note how the execution line count is much smaller. While it seems like the class is larger in total, this becomes much smaller when comparing a command with child arguments as well as a help child command as there is no additional code to do that in the BukkitCommandSystem while in regular Bukkit, typically you would have a switch statement, then the child command within that switch block with the help as default. As you can imagine, this takes up more lines of code then the BukkitCommandSystem.
 
-# arguments
-
-## custom arguments
-
-# package
-
-## maven
-
-```xml
-<dependency>
-  <groupId>org.mose.command</groupId>
-  <artifactId>bukkit-command-system</artifactId>
-  <version>1.1.0</version>
-  <scope>compile</scope>
-</dependency>
-```
-
-## gradle
-
-``ToDo``
 
 
 
