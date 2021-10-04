@@ -25,6 +25,10 @@ The basic idea is that all the parsing is handled within its own class and then 
 
 # package
 
+## Javadocs
+
+[Link](https://mosemister.github.io/BukkitCommandSystem/)
+
 ## maven
 
 ```xml
