@@ -1,4 +1,4 @@
-# BukkitCommandSystem
+
 
 The Bukkit Command System is a port of "Core Command System" to the Bukkit platform. 
 
@@ -7,6 +7,7 @@ You get the argument objects already parsed making it hassle free to develop com
 
 Unlike many other command systems that attempt to update the Bukkits original command system that they still use and has been the same since version 1. This command system doesn't use any NMS or craftbukkit calls meaning that projects such as Glowstone, Cauldron, etc will work without those developers needing to reroute the calls. 
 
+[![](https://jitpack.io/v/mosemister/BukkitCommandSystem.svg)](https://jitpack.io/#mosemister/BukkitCommandSystem)
 
 
 ## Features
@@ -30,13 +31,33 @@ The basic idea is that all the parsing is handled within its own class and then 
 
 [Link](https://mosemister.github.io/BukkitCommandSystem/)
 
-## maven
+## maven 
+
+```xml
+<repositories>
+  <repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>	
+  </repository>
+</repositories>
+```
 
 ```xml
 <dependency>
   <groupId>org.mose.command</groupId>
   <artifactId>bukkit-command-system</artifactId>
-  <version>1.1.0</version>
+  <version>1.1.3</version>
+  <scope>compile</scope>
+</dependency>
+```
+
+### backup repo
+
+```xml
+<dependency>
+  <groupId>org.mose.command</groupId>
+  <artifactId>bukkit-command-system</artifactId>
+  <version>1.1.3</version>
   <scope>compile</scope>
 </dependency>
 ```
