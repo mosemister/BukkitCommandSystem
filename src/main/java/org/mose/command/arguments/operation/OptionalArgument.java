@@ -23,84 +23,90 @@ import java.util.Optional;
  */
 public class OptionalArgument<T> implements CommandArgument<T> {
 
-    /**
-     * If the Optional not provided value is known, then you can use
-     * a WrappedParser to pass the argument to the OptionalArgument
-     * if needed
-     *
-     * @param <T> The type
-     */
-    public record WrappedParser<T>(@Nullable T value) implements ParseCommandArgument<T> {
+	/**
+	 * If the Optional not provided value is known, then you can use
+	 * a WrappedParser to pass the argument to the OptionalArgument
+	 * if needed
+	 *
+	 * @param <T> The type
+	 */
+	public record WrappedParser<T>(@Nullable T value) implements ParseCommandArgument<T> {
 
-        public WrappedParser(@Nullable T value) {
-            this.value = value;
-        }
+		public WrappedParser(@Nullable T value) {
+			this.value = value;
+		}
 
-        @Override
-        public @NotNull
-        CommandArgumentResult<T> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<T> argument) {
-            return CommandArgumentResult.from(argument, 0, this.value);
-        }
-    }
+		@Override
+		public @NotNull
+		CommandArgumentResult<T> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<T> argument) {
+			return CommandArgumentResult.from(argument, 0, this.value);
+		}
+	}
 
-    private final @NotNull CommandArgument<T> arg;
-    private final @NotNull ParseCommandArgument<T> value;
+	private final @NotNull CommandArgument<T> arg;
+	private final @NotNull ParseCommandArgument<T> value;
 
-    /**
-     * Constructor
-     *
-     * @param arg   The command argument
-     * @param value The raw value if failed
-     */
-    public OptionalArgument(@NotNull CommandArgument<T> arg, @NotNull T value) {
-        this(arg, new WrappedParser<>(value));
-    }
+	public OptionalArgument(@NotNull CommandArgument<T> arg) {
+		this(arg, (T) null);
+	}
 
-    /**
-     * Constructor
-     *
-     * @param arg   The command argument
-     * @param value the argument processor to use if the argument failed
-     */
-    public OptionalArgument(@NotNull CommandArgument<T> arg, @NotNull ParseCommandArgument<T> value) {
-        this.arg = arg;
-        this.value = value;
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param arg   The command argument
+	 * @param value The raw value if failed
+	 */
+	public OptionalArgument(@NotNull CommandArgument<T> arg, @Nullable T value) {
+		this(arg, new WrappedParser<>(value));
+	}
 
-    /**
-     * Gets the original argument to compare
-     *
-     * @return The original argument
-     */
-    public @NotNull CommandArgument<T> getOriginalArgument() {
-        return this.arg;
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param arg   The command argument
+	 * @param value the argument processor to use if the argument failed
+	 */
+	public OptionalArgument(@NotNull CommandArgument<T> arg, @NotNull ParseCommandArgument<T> value) {
+		this.arg = arg;
+		this.value = value;
+	}
 
-    @Override
-    public @NotNull String getId() {
-        return this.arg.getId();
-    }
+	/**
+	 * Gets the original argument to compare
+	 *
+	 * @return The original argument
+	 */
+	public @NotNull CommandArgument<T> getOriginalArgument() {
+		return this.arg;
+	}
 
-    @Override
-    public @NotNull CommandArgumentResult<T> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<T> argument) throws IOException {
-        if (context.getCommand().length==argument.getFirstArgument()) {
-            return CommandArgumentResult.from(argument, 0, this.value.parse(context, argument).getValue());
-        }
-        try {
-            return this.arg.parse(context, argument);
-        } catch (IOException e) {
-            return CommandArgumentResult.from(argument, 0, this.value.parse(context, argument).getValue());
-        }
-    }
+	@Override
+	public @NotNull String getId() {
+		return this.arg.getId();
+	}
 
-    @Override
-    public @NotNull Collection<String> suggest(@NotNull CommandContext commandContext, @NotNull CommandArgumentContext<T> argument) {
-        return this.arg.suggest(commandContext, argument);
-    }
+	@Override
+	public @NotNull CommandArgumentResult<T> parse(@NotNull CommandContext context,
+			@NotNull CommandArgumentContext<T> argument) throws IOException {
+		if (context.getCommand().length == argument.getFirstArgument()) {
+			return CommandArgumentResult.from(argument, 0, this.value.parse(context, argument).getValue());
+		}
+		try {
+			return this.arg.parse(context, argument);
+		} catch (IOException e) {
+			return CommandArgumentResult.from(argument, 0, this.value.parse(context, argument).getValue());
+		}
+	}
 
-    @Override
-    public @NotNull String getUsage() {
-        String original = this.getOriginalArgument().getUsage();
-        return "[" + original.substring(1, original.length() - 1) + "]";
-    }
+	@Override
+	public @NotNull Collection<String> suggest(@NotNull CommandContext commandContext,
+			@NotNull CommandArgumentContext<T> argument) {
+		return this.arg.suggest(commandContext, argument);
+	}
+
+	@Override
+	public @NotNull String getUsage() {
+		String original = this.getOriginalArgument().getUsage();
+		return "[" + original.substring(1, original.length() - 1) + "]";
+	}
 }
