@@ -7,7 +7,6 @@ import org.mose.command.CommandArgumentResult;
 import org.mose.command.context.CommandArgumentContext;
 import org.mose.command.context.CommandContext;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -32,7 +31,7 @@ public class BlankArgument<T> implements CommandArgument<T> {
 
 	@Override
 	public @NotNull CommandArgumentResult<T> parse(@NotNull CommandContext context,
-			@NotNull CommandArgumentContext<T> argument) throws IOException {
+			@NotNull CommandArgumentContext<T> argument) {
 		return CommandArgumentResult.from(argument, 0, this.value);
 	}
 

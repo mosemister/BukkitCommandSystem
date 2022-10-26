@@ -21,11 +21,6 @@ import java.util.stream.Stream;
 public record EnumArgument<E extends Enum<?>>(@NotNull String id,
                                               @NotNull Class<E> clazz) implements CommandArgument<E> {
 
-    public EnumArgument(@NotNull String id, @NotNull Class<E> clazz) {
-        this.id = id;
-        this.clazz = clazz;
-    }
-
     private @NotNull
     E[] getValues() throws NoSuchFieldException, IllegalAccessException {
         Field f = this.clazz.getDeclaredField("$VALUES");

@@ -19,10 +19,6 @@ import java.util.stream.Collectors;
  */
 public record PlayerArgument(@NotNull String id) implements CommandArgument<Player> {
 
-    public PlayerArgument(@NotNull String id) {
-        this.id = id;
-    }
-
     @Override
     public @NotNull
     String getId() {

@@ -31,6 +31,7 @@ public class TagArgument extends IdentifiableArgument<Tag<Material>> {
                         return (Tag<?>) f.get(null);
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
+                        //noinspection ReturnOfNull
                         return null;
                     }
                 })

@@ -16,10 +16,6 @@ import java.util.Set;
  */
 public record DoubleArgument(@NotNull String id) implements CommandArgument<Double> {
 
-    public DoubleArgument(@NotNull String id) {
-        this.id = id;
-    }
-
     @Override
     public @NotNull
     String getId() {

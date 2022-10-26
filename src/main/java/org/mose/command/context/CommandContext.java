@@ -18,7 +18,7 @@ public class CommandContext {
 
 	private final @NotNull String[] commands;
 	private final @NotNull CommandSender source;
-	private final @NotNull Set<ArgumentCommand> potentialCommands = new HashSet<>();
+	private final @NotNull Collection<ArgumentCommand> potentialCommands = new HashSet<>();
 
 	/**
 	 * @param source   The command source who is running the command
@@ -61,7 +61,7 @@ public class CommandContext {
 	public @NotNull Collection<String> getSuggestions(@NotNull ArgumentCommand command) {
 		List<CommandArgument<?>> arguments = command.getArguments();
 		int commandArgument = 0;
-		List<OptionalArgument<?>> optionalArguments = new ArrayList<>();
+		Collection<OptionalArgument<?>> optionalArguments = new ArrayList<>();
 		for (CommandArgument<?> arg : arguments) {
 			if (this.commands.length == commandArgument) {
 				if (arg instanceof OptionalArgument) {
@@ -88,7 +88,7 @@ public class CommandContext {
 		if (optionalArguments.isEmpty()) {
 			return Collections.emptySet();
 		}
-		Set<String> ret = new HashSet<>();
+		Collection<String> ret = new HashSet<>();
 		for (OptionalArgument<?> argument : optionalArguments) {
 			ret.addAll(suggest(argument, commandArgument));
 		}
@@ -101,7 +101,7 @@ public class CommandContext {
 	 * @param command The command to target
 	 * @param id      The command argument that should be used
 	 * @param <T>     The expected type of argument (by providing the command argument, the type will be the same
-     *              unless the argument is breaking the standard)
+	 *                unless the argument is breaking the standard)
 	 * @return The value of the argument
 	 * @throws IllegalArgumentException If the provided id argument is not part of the command
 	 * @throws IllegalStateException    Argument requested is asking for string requirements then what is provided
@@ -159,7 +159,7 @@ public class CommandContext {
 	 * @return A set of all errors
 	 */
 	public @NotNull Set<ErrorContext> getErrors() {
-		Set<ErrorContext> map = new HashSet<>();
+		Collection<ErrorContext> map = new HashSet<>();
 		for (ArgumentCommand command : this.potentialCommands) {
 			List<CommandArgument<?>> arguments = command.getArguments();
 			int commandArgument = 0;
@@ -284,6 +284,6 @@ public class CommandContext {
 		if (this.commands.length <= commandArgument) {
 			return Collections.emptySet();
 		}
-		return arg.suggest(this, new CommandArgumentContext<T>(arg, commandArgument, this.commands));
+		return arg.suggest(this, new CommandArgumentContext<>(arg, commandArgument, this.commands));
 	}
 }

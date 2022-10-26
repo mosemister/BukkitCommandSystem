@@ -15,10 +15,6 @@ import java.util.Set;
  */
 public record IntegerArgument(@NotNull String id) implements CommandArgument<Integer> {
 
-    public IntegerArgument(@NotNull String id) {
-        this.id = id;
-    }
-
     @Override
     public @NotNull
     String getId() {

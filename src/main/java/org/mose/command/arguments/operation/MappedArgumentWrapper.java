@@ -19,17 +19,6 @@ import java.util.function.Function;
 public record MappedArgumentWrapper<T, J>(@NotNull CommandArgument<J> commandArgument,
                                           @NotNull Function<J, T> convert) implements CommandArgument<T> {
 
-    /**
-     * Constructor
-     *
-     * @param commandArgument The original command argument
-     * @param convert         The function for mapping from one to another
-     */
-    public MappedArgumentWrapper(@NotNull CommandArgument<J> commandArgument, @NotNull Function<J, T> convert) {
-        this.commandArgument = commandArgument;
-        this.convert = convert;
-    }
-
     @Override
     public @NotNull
     String getId() {

@@ -31,11 +31,6 @@ public class OptionalArgument<T> implements CommandArgument<T> {
 	 * @param <T> The type
 	 */
 	public record WrappedParser<T>(@Nullable T value) implements ParseCommandArgument<T> {
-
-		public WrappedParser(@Nullable T value) {
-			this.value = value;
-		}
-
 		@Override
 		public @NotNull
 		CommandArgumentResult<T> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<T> argument) {

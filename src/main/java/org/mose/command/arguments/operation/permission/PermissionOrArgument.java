@@ -23,10 +23,10 @@ import java.util.function.Predicate;
  */
 public class PermissionOrArgument<T> implements CommandArgument<T> {
 
-	@NotNull String id;
-	@NotNull Predicate<CommandSender> permission;
-	@NotNull ParseCommandArgument<T> with;
-	@NotNull ParseCommandArgument<T> or;
+	private final @NotNull String id;
+	private final @NotNull Predicate<CommandSender> permission;
+	private final @NotNull ParseCommandArgument<T> with;
+	private final @NotNull ParseCommandArgument<T> or;
 
 	public PermissionOrArgument(@NotNull String id, @NotNull Predicate<CommandSender> permission,
 			@NotNull ParseCommandArgument<T> with) {

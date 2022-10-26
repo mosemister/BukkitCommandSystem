@@ -7,6 +7,7 @@ import org.mose.command.context.CommandArgumentContext;
 import org.mose.command.context.CommandContext;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -72,12 +73,8 @@ public class ExactArgument implements CommandArgument<String> {
     }
 
     private boolean anyMatch(@NotNull String arg) {
-        for (String a : this.lookup) {
-            if ((this.caseSens && a.equals(arg)) || (!this.caseSens && a.equalsIgnoreCase(arg))) {
-                return true;
-            }
-        }
-        return false;
+        return Arrays.stream(this.lookup)
+                .anyMatch(a -> (this.caseSens && a.equals(arg)) || (!this.caseSens && a.equalsIgnoreCase(arg)));
     }
 
     @Override

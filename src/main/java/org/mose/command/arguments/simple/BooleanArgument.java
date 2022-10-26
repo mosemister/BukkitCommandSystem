@@ -15,10 +15,6 @@ import java.util.Set;
  */
 public record BooleanArgument(@NotNull String id) implements CommandArgument<Boolean> {
 
-    public BooleanArgument(@NotNull String id) {
-        this.id = id;
-    }
-
     @Override
     public @NotNull
     String getId() {
