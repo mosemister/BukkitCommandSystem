@@ -67,7 +67,7 @@ public class BukkitCommandWrapper implements TabExecutor {
             return true;
         }
         if (!opCommand.get().hasPermission(commandSender)) {
-            commandSender.sendMessage(ChatColor.RED + " You do not have permission for that command. You require " + opCommand.get().getPermissionNode());
+            commandSender.sendMessage(ChatColor.RED + " You do not have permission for that command. You require " + opCommand.get().getPermissionNode().orElse("unknown"));
             return true;
         }
         return opCommand.get().run(commandContext, strings);
