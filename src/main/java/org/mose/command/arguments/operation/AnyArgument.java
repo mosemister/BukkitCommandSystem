@@ -79,12 +79,24 @@ public class AnyArgument<A> implements CommandArgument<A> {
         if (result==null) {
             throw new IOException("Unknown value of " + arg);
         }
-        return CommandArgumentResult.from(argument, 0, result);
+        return CommandArgumentResult.from(argument, result);
     }
 
     @Override
     public @NotNull Set<String> suggest(@NotNull CommandContext context, @NotNull CommandArgumentContext<A> argument) {
         String arg = context.getCommand()[argument.getFirstArgument()];
         return this.supply.apply(context, argument).stream().map(toString).filter(v -> v.toLowerCase().startsWith(arg)).collect(Collectors.toSet());
+    }
+
+    public static AnyArgument<String> buildStringList(String id, BiFunction<CommandContext, CommandArgumentContext<String>, Collection<String>> function){
+        return new AnyArgument<>(id, v -> v, (collection, value) -> collection.stream().anyMatch(v -> v.equalsIgnoreCase(value)) ? value : null, function);
+    }
+
+    public static <A> AnyArgument<A> buildMappedToString(String id, BiFunction<CommandContext, CommandArgumentContext<A>, Collection<A>> function){
+        return buildMapped(id, Object::toString, function);
+    }
+
+    public static <A> AnyArgument<A> buildMapped(String id, Function<A, String> toString, BiFunction<CommandContext, CommandArgumentContext<A>, Collection<A>> function){
+        return new AnyArgument<>(id, toString, (collection, value) -> collection.stream().filter(v -> toString.apply(v).equals(value)).findFirst().orElse(null), function);
     }
 }
