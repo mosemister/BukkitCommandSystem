@@ -44,6 +44,22 @@ public class BukkitCommandWrapper implements TabExecutor {
      * @param commands The possible commands for this command
      */
     public BukkitCommandWrapper(Collection<ArgumentCommand> commands) {
+        Optional<ArgumentCommand> opInvalidCommand = commands
+                .parallelStream()
+                .filter(cmd -> {
+                    long distinctArguments = cmd
+                            .getArguments()
+                            .stream()
+                            .map(CommandArgument::getId)
+                            .distinct()
+                            .count();
+                    long size = cmd.getArguments().size();
+                    return distinctArguments != size;
+                })
+                .findAny();
+        if (opInvalidCommand.isPresent()) {
+            throw new RuntimeException("The following command has 2 or more arguments with the same Id:" + opInvalidCommand.get().getClass().getName());
+        }
         this.commands.addAll(commands);
     }
 

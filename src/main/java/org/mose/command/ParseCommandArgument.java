@@ -1,8 +1,11 @@
 package org.mose.command;
 
 import org.jetbrains.annotations.NotNull;
+import org.mose.command.context.ArgumentCommandContext;
+import org.mose.command.context.ArgumentContext;
 import org.mose.command.context.CommandArgumentContext;
 import org.mose.command.context.CommandContext;
+import org.mose.command.exception.ArgumentException;
 
 import java.io.IOException;
 
@@ -21,7 +24,26 @@ public interface ParseCommandArgument<T> {
      * @param argument The argument context from the command
      * @return A CommandArgumentResult of the argument
      * @throws IOException if the argument cannot be processed, then it will throw a IOException of what went wrong
+     * @deprecated Use the ArgumentContext edition
      */
-    @NotNull CommandArgumentResult<T> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<T> argument) throws IOException;
+    @Deprecated(forRemoval = true)
+    default @NotNull CommandArgumentResult<T> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<T> argument) throws IOException {
+        try {
+            return parse(context, new ArgumentCommandContext<>(argument.getArgument(), argument.getFirstArgument(), context.getCommand()));
+        } catch (ArgumentException e) {
+            throw new IOException(e);
+        }
+    }
+
+    default @NotNull CommandArgumentResult<T> parse(@NotNull CommandContext context, @NotNull ArgumentContext argument) throws ArgumentException {
+        if (argument instanceof ArgumentCommandContext<?> commandContext) {
+            try {
+                return parse(context, new CommandArgumentContext<>((CommandArgument<T>) commandContext.getArgument(), argument.getArgumentIndex(), context.getCommand()));
+            } catch (IOException e) {
+                throw new ArgumentException(e);
+            }
+        }
+        throw new RuntimeException("Argument has not been updated to accept ArgumentContext");
+    }
 
 }

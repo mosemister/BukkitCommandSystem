@@ -3,6 +3,7 @@ package org.mose.command.context;
 import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 
+@Deprecated(forRemoval = true)
 public class CommandArgumentContext<T> {
 
     private final @NotNull CommandArgument<T> argument;
