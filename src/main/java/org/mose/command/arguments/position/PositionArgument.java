@@ -4,10 +4,11 @@ import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
-import org.mose.command.context.CommandArgumentContext;
+import org.mose.command.context.ArgumentCommandContext;
+import org.mose.command.context.ArgumentContext;
 import org.mose.command.context.CommandContext;
+import org.mose.command.exception.ArgumentException;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
@@ -44,19 +45,19 @@ public abstract class PositionArgument<N extends Number, P> implements CommandAr
     }
 
     @Override
-    public @NotNull CommandArgumentResult<P> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<P> argument) throws IOException {
-        int firstPosition = argument.getFirstArgument();
+    public @NotNull CommandArgumentResult<P> parse(@NotNull CommandContext context, @NotNull ArgumentContext argument) throws ArgumentException {
+        int firstPosition = argument.getArgumentIndex();
         WorldArgument worldArg = new WorldArgument("");
-        CommandArgumentResult<World> extent = worldArg.parse(context, new CommandArgumentContext<>(worldArg, firstPosition, context.getCommand()));
-        CommandArgumentResult<N> x = this.positionArgument.parse(context, new CommandArgumentContext<>(this.positionArgument, extent.getPosition() + 1, context.getCommand()));
-        CommandArgumentResult<N> y = this.positionArgument.parse(context, new CommandArgumentContext<>(this.positionArgument, x.getPosition(), context.getCommand()));
-        CommandArgumentResult<N> z = this.positionArgument.parse(context, new CommandArgumentContext<>(this.positionArgument, y.getPosition(), context.getCommand()));
+        CommandArgumentResult<World> extent = worldArg.parse(context, new ArgumentCommandContext<>(worldArg, firstPosition, context.getCommand()));
+        CommandArgumentResult<N> x = this.positionArgument.parse(context, new ArgumentCommandContext<>(this.positionArgument, extent.getPosition() + 1, context.getCommand()));
+        CommandArgumentResult<N> y = this.positionArgument.parse(context, new ArgumentCommandContext<>(this.positionArgument, x.getPosition(), context.getCommand()));
+        CommandArgumentResult<N> z = this.positionArgument.parse(context, new ArgumentCommandContext<>(this.positionArgument, y.getPosition(), context.getCommand()));
         P pos = build(extent.getValue(), x.getValue(), y.getValue(), z.getValue());
         return new CommandArgumentResult<>(z.getPosition(), pos);
     }
 
     @Override
-    public @NotNull Set<String> suggest(@NotNull CommandContext commandContext, @NotNull CommandArgumentContext<P> argument) {
+    public @NotNull Set<String> suggest(@NotNull CommandContext commandContext, @NotNull ArgumentContext argument) {
         return Collections.emptySet();
     }
 }

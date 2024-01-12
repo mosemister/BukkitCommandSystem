@@ -4,16 +4,18 @@ import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
 import org.mose.command.arguments.simple.text.StringArgument;
-import org.mose.command.context.CommandArgumentContext;
+import org.mose.command.context.ArgumentCommandContext;
+import org.mose.command.context.ArgumentContext;
 import org.mose.command.context.CommandContext;
+import org.mose.command.exception.ArgumentException;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Parses all the string arguments that have not be processed after the last successful parse.
  * This attempts the parse each string argument against a collection
+ *
  * @param <T> The common type
  */
 public class RemainingArgument<T> implements CommandArgument<List<T>> {
@@ -23,6 +25,7 @@ public class RemainingArgument<T> implements CommandArgument<List<T>> {
 
     /**
      * Do not use. provide command arguments
+     *
      * @param id Ignore
      * @throws RuntimeException Tells you not to use it
      */
@@ -34,6 +37,7 @@ public class RemainingArgument<T> implements CommandArgument<List<T>> {
     /**
      * Used for wrapping a single argument as a Remaining argument. This can be great for
      * if the command requires a sentence where you use this constructor and pass a {@link StringArgument}
+     *
      * @param argument The only argument to compare against
      */
     public RemainingArgument(@NotNull CommandArgument<T> argument) {
@@ -42,7 +46,8 @@ public class RemainingArgument<T> implements CommandArgument<List<T>> {
 
     /**
      * Constructor
-     * @param id The id of the argument
+     *
+     * @param id       The id of the argument
      * @param argument The arguments to compare against in var-array form
      */
     @SafeVarargs
@@ -52,7 +57,8 @@ public class RemainingArgument<T> implements CommandArgument<List<T>> {
 
     /**
      * Constructor
-     * @param id The id of the argument
+     *
+     * @param id       The id of the argument
      * @param argument The arguments to compare against in collection form
      */
     public RemainingArgument(@NotNull String id, @NotNull Collection<CommandArgument<T>> argument) {
@@ -63,21 +69,21 @@ public class RemainingArgument<T> implements CommandArgument<List<T>> {
         this.argument = new ArrayList<>(argument);
     }
 
-    private @NotNull CommandArgumentResult<T> parseAny(@NotNull CommandContext context, int B) throws IOException {
-        IOException e1 = null;
+    private @NotNull CommandArgumentResult<T> parseAny(@NotNull CommandContext context, int B) throws ArgumentException {
+        ArgumentException e1 = null;
         for (int A = 0; A < this.argument.size(); A++) {
             try {
-                CommandArgumentContext<T> argumentContext = new CommandArgumentContext<>(this.argument.get(A), B, context.getCommand());
+                ArgumentContext argumentContext = new ArgumentCommandContext<>(this.argument.get(A), B, context.getCommand());
                 return this.argument.get(A).parse(context, argumentContext);
-            } catch (IOException e) {
-                if (A==0) {
+            } catch (ArgumentException e) {
+                if (A == 0) {
                     e1 = e;
                 }
             }
         }
-        if (e1==null) {
+        if (e1 == null) {
             //shouldnt be possible
-            throw new IOException("Unknown error occurred");
+            throw new ArgumentException("Unknown error occurred");
         }
         throw e1;
     }
@@ -88,8 +94,8 @@ public class RemainingArgument<T> implements CommandArgument<List<T>> {
     }
 
     @Override
-    public @NotNull CommandArgumentResult<List<T>> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<List<T>> argument) throws IOException {
-        int A = argument.getFirstArgument();
+    public @NotNull CommandArgumentResult<List<T>> parse(@NotNull CommandContext context, @NotNull ArgumentContext argument) throws ArgumentException {
+        int A = argument.getArgumentIndex();
         List<T> list = new ArrayList<>();
         while (A < context.getCommand().length) {
             CommandArgumentResult<T> entry = parseAny(context, A);
@@ -100,15 +106,15 @@ public class RemainingArgument<T> implements CommandArgument<List<T>> {
     }
 
     @Override
-    public @NotNull Collection<String> suggest(@NotNull CommandContext context, @NotNull CommandArgumentContext<List<T>> argument) {
-        int A = argument.getFirstArgument();
+    public @NotNull Collection<String> suggest(@NotNull CommandContext context, @NotNull ArgumentContext argument) {
+        int A = argument.getArgumentIndex();
         while (A < context.getCommand().length) {
             final int B = A;
             CommandArgumentResult<T> entry;
             try {
                 entry = parseAny(context, A);
-            } catch (IOException e) {
-                return this.argument.stream().flatMap(a -> a.suggest(context, new CommandArgumentContext<>(a, B, context.getCommand())).stream()).collect(Collectors.toSet());
+            } catch (ArgumentException e) {
+                return this.argument.stream().flatMap(a -> a.suggest(context, new ArgumentCommandContext<>(a, B, context.getCommand())).stream()).collect(Collectors.toSet());
             }
             A = entry.getPosition();
         }

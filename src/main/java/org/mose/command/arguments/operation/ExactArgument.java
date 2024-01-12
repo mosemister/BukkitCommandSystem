@@ -3,10 +3,10 @@ package org.mose.command.arguments.operation;
 import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
-import org.mose.command.context.CommandArgumentContext;
+import org.mose.command.context.ArgumentContext;
 import org.mose.command.context.CommandContext;
+import org.mose.command.exception.ArgumentException;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,6 +25,7 @@ public class ExactArgument implements CommandArgument<String> {
 
     /**
      * A quick way to use the provided id as the exact argument without being case sensitive
+     *
      * @param id The Id and lookup of the command
      */
     public ExactArgument(@NotNull String id) {
@@ -33,25 +34,27 @@ public class ExactArgument implements CommandArgument<String> {
 
     /**
      * This tells developers that a lookup should be defined
-     * @param id ignored
+     *
+     * @param id       ignored
      * @param caseSens ignored
      * @throws RuntimeException lookup needs to be defined
      */
     @Deprecated
-    public ExactArgument(@NotNull String id, boolean caseSens){
+    public ExactArgument(@NotNull String id, boolean caseSens) {
         throw new RuntimeException("Lookup should be defined");
     }
 
     /**
      * If you need to have more then one exact match or you need to make it case sensitive,
      * then use this constructor
-     * @param id The Id of the command
+     *
+     * @param id       The Id of the command
      * @param caseSens If the check should be case sensitive
-     * @param lookup The possible lookups as a var array
+     * @param lookup   The possible lookups as a var array
      * @throws IllegalArgumentException if no lookup are provided
      */
     public ExactArgument(@NotNull String id, boolean caseSens, @NotNull String... lookup) {
-        if (lookup.length==0) {
+        if (lookup.length == 0) {
             throw new IllegalArgumentException("Lookup cannot be []");
         }
         this.id = id;
@@ -61,6 +64,7 @@ public class ExactArgument implements CommandArgument<String> {
 
     /**
      * Gets all possible lookups
+     *
      * @return Gets all possible lookups as a array
      */
     public @NotNull String[] getLookup() {
@@ -78,19 +82,19 @@ public class ExactArgument implements CommandArgument<String> {
     }
 
     @Override
-    public @NotNull CommandArgumentResult<String> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<String> argument) throws IOException {
-        String arg = context.getCommand()[argument.getFirstArgument()];
+    public @NotNull CommandArgumentResult<String> parse(@NotNull CommandContext context, @NotNull ArgumentContext argument) throws ArgumentException {
+        String arg = argument.getFocusArgument();
         if (anyMatch(arg)) {
             return CommandArgumentResult.from(argument, arg);
         }
-        throw new IOException("Unknown argument of '" + arg + "'");
+        throw new ArgumentException("Unknown argument of '" + arg + "'");
     }
 
     @Override
-    public @NotNull Set<String> suggest(@NotNull CommandContext context, @NotNull CommandArgumentContext<String> argument) {
+    public @NotNull Set<String> suggest(@NotNull CommandContext context, @NotNull ArgumentContext argument) {
         String arg = "";
-        if (context.getCommand().length > argument.getFirstArgument()) {
-            arg = context.getCommand()[argument.getFirstArgument()];
+        if (context.getCommand().length > argument.getArgumentIndex()) {
+            arg = argument.getFocusArgument();
         }
         Set<String> args = new HashSet<>();
         for (String look : this.lookup) {

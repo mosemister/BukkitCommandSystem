@@ -6,10 +6,10 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
-import org.mose.command.context.CommandArgumentContext;
+import org.mose.command.context.ArgumentContext;
 import org.mose.command.context.CommandContext;
+import org.mose.command.exception.ArgumentException;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,15 +27,15 @@ public record PlayerArgument(@NotNull String id) implements CommandArgument<Play
 
     @Override
     public @NotNull
-    CommandArgumentResult<Player> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<Player> argument) throws IOException {
-        String command = context.getCommand()[argument.getFirstArgument()];
+    CommandArgumentResult<Player> parse(@NotNull CommandContext context, @NotNull ArgumentContext argument) throws ArgumentException {
+        String command = argument.getFocusArgument();
         Optional<? extends Player> opPlayer = Bukkit
                 .getOnlinePlayers()
                 .stream()
                 .filter(p -> p.getName().equalsIgnoreCase(command))
                 .findFirst();
         if (opPlayer.isEmpty()) {
-            throw new IOException("Player is not online");
+            throw new ArgumentException("Player is not online");
         }
         return CommandArgumentResult.from(argument, opPlayer.get());
 
@@ -43,13 +43,13 @@ public record PlayerArgument(@NotNull String id) implements CommandArgument<Play
 
     @Override
     public @NotNull
-    Set<String> suggest(@NotNull CommandContext commandContext, @NotNull CommandArgumentContext<Player> argument) {
-        String command = commandContext.getCommand()[argument.getFirstArgument()];
+    Set<String> suggest(@NotNull CommandContext commandContext, @NotNull ArgumentContext argument) {
+        String command = argument.getFocusArgument().toLowerCase();
         return Bukkit
                 .getOnlinePlayers()
                 .stream()
                 .map(HumanEntity::getName)
-                .filter(p -> p.toLowerCase().startsWith(command.toLowerCase()))
+                .filter(p -> p.toLowerCase().startsWith(command))
                 .collect(Collectors.toSet());
     }
 }

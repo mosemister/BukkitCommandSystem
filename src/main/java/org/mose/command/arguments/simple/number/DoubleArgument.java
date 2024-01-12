@@ -3,10 +3,10 @@ package org.mose.command.arguments.simple.number;
 import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
-import org.mose.command.context.CommandArgumentContext;
+import org.mose.command.context.ArgumentContext;
 import org.mose.command.context.CommandContext;
+import org.mose.command.exception.ArgumentException;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
@@ -24,17 +24,17 @@ public record DoubleArgument(@NotNull String id) implements CommandArgument<Doub
 
     @Override
     public @NotNull
-    CommandArgumentResult<Double> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<Double> argument) throws IOException {
+    CommandArgumentResult<Double> parse(@NotNull CommandContext context, @NotNull ArgumentContext argument) throws ArgumentException {
         try {
-            return CommandArgumentResult.from(argument, Double.parseDouble(context.getCommand()[argument.getFirstArgument()]));
+            return CommandArgumentResult.from(argument, Double.parseDouble(context.getCommand()[argument.getArgumentIndex()]));
         } catch (NumberFormatException e) {
-            throw new IOException("'" + context.getCommand()[argument.getFirstArgument()] + "' is not a number");
+            throw new ArgumentException("'" + context.getCommand()[argument.getArgumentIndex()] + "' is not a number");
         }
     }
 
     @Override
     public @NotNull
-    Set<String> suggest(@NotNull CommandContext commandContext, @NotNull CommandArgumentContext<Double> argument) {
+    Set<String> suggest(@NotNull CommandContext commandContext, @NotNull ArgumentContext argument) {
         return Collections.emptySet();
     }
 }

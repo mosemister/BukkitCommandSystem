@@ -5,10 +5,10 @@ import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
-import org.mose.command.context.CommandArgumentContext;
+import org.mose.command.context.ArgumentContext;
 import org.mose.command.context.CommandContext;
+import org.mose.command.exception.ArgumentException;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
@@ -34,20 +34,20 @@ public class UserArgument implements CommandArgument<OfflinePlayer> {
     }
 
     @Override
-    public @NotNull CommandArgumentResult<OfflinePlayer> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<OfflinePlayer> argument) throws IOException {
-        String command = context.getCommand()[argument.getFirstArgument()];
+    public @NotNull CommandArgumentResult<OfflinePlayer> parse(@NotNull CommandContext context, @NotNull ArgumentContext argument) throws ArgumentException {
+        String command = argument.getFocusArgument();
         return Arrays
                 .stream(Bukkit.getOfflinePlayers())
-                .filter(offlinePlayer -> offlinePlayer.getName()!=null)
+                .filter(offlinePlayer -> offlinePlayer.getName() != null)
                 .filter(offlinePlayer -> offlinePlayer.getName().equalsIgnoreCase(command))
                 .findAny()
                 .map(offlinePlayer -> CommandArgumentResult.from(argument, offlinePlayer))
-                .orElseThrow(() -> new IOException("Unknown user"));
+                .orElseThrow(() -> new ArgumentException("Unknown user"));
     }
 
     @Override
-    public @NotNull Collection<String> suggest(@NotNull CommandContext commandContext, @NotNull CommandArgumentContext<OfflinePlayer> argument) {
-        String command = commandContext.getCommand()[argument.getFirstArgument()];
+    public @NotNull Collection<String> suggest(@NotNull CommandContext commandContext, @NotNull ArgumentContext argument) {
+        String command = argument.getFocusArgument();
         return Arrays
                 .stream(Bukkit.getOfflinePlayers())
                 .filter(this.filter)

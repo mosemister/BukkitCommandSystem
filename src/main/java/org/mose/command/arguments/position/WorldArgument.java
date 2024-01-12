@@ -9,10 +9,10 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
-import org.mose.command.context.CommandArgumentContext;
+import org.mose.command.context.ArgumentContext;
 import org.mose.command.context.CommandContext;
+import org.mose.command.exception.ArgumentException;
 
-import java.io.IOException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,10 +30,10 @@ public record WorldArgument(@NotNull String id) implements CommandArgument<World
 
     @Override
     public @NotNull
-    CommandArgumentResult<World> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<World> argument) throws IOException {
-        String worldName = context.getCommand()[argument.getFirstArgument()];
+    CommandArgumentResult<World> parse(@NotNull CommandContext context, @NotNull ArgumentContext argument) throws ArgumentException {
+        String worldName = context.getCommand()[argument.getArgumentIndex()];
         World world = Bukkit.getWorld(worldName);
-        if (world!=null) {
+        if (world != null) {
             return CommandArgumentResult.from(argument, world);
         }
         if (context.getSource() instanceof Player) {
@@ -44,13 +44,13 @@ public record WorldArgument(@NotNull String id) implements CommandArgument<World
             World blockWorld = ((BlockState) context.getSource()).getWorld();
             return CommandArgumentResult.from(argument, 0, blockWorld);
         }
-        throw new IOException("Unknown world name of '" + worldName + "'");
+        throw new ArgumentException("Unknown world name of '" + worldName + "'");
     }
 
     @Override
     public @NotNull
-    Set<String> suggest(@NotNull CommandContext commandContext, @NotNull CommandArgumentContext<World> argument) {
-        String worldPeek = commandContext.getCommand()[argument.getFirstArgument()];
+    Set<String> suggest(@NotNull CommandContext commandContext, @NotNull ArgumentContext argument) {
+        String worldPeek = commandContext.getCommand()[argument.getArgumentIndex()];
         return Bukkit
                 .getWorlds()
                 .stream()

@@ -5,10 +5,10 @@ import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
-import org.mose.command.context.CommandArgumentContext;
+import org.mose.command.context.ArgumentContext;
 import org.mose.command.context.CommandContext;
+import org.mose.command.exception.ArgumentException;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -47,8 +47,8 @@ public abstract class IdentifiableArgument<I extends Keyed> implements CommandAr
     }
 
     @Override
-    public @NotNull CommandArgumentResult<I> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<I> argument) throws IOException {
-        String id = context.getCommand()[argument.getFirstArgument()];
+    public @NotNull CommandArgumentResult<I> parse(@NotNull CommandContext context, @NotNull ArgumentContext argument) throws ArgumentException {
+        String id = argument.getFocusArgument();
         Optional<I> opIdent = this
                 .getAll()
                 .stream()
@@ -56,14 +56,14 @@ public abstract class IdentifiableArgument<I extends Keyed> implements CommandAr
                 .filter(a -> a.getKey().toString().equalsIgnoreCase(id))
                 .findAny();
         if (opIdent.isEmpty()) {
-            throw new IOException("Invalid ID of '" + id + "'");
+            throw new ArgumentException("Invalid ID of '" + id + "'");
         }
         return CommandArgumentResult.from(argument, opIdent.get());
     }
 
     @Override
-    public @NotNull Set<String> suggest(@NotNull CommandContext context, @NotNull CommandArgumentContext<I> argument) {
-        String id = context.getCommand()[argument.getFirstArgument()];
+    public @NotNull Set<String> suggest(@NotNull CommandContext context, @NotNull ArgumentContext argument) {
+        String id = argument.getFocusArgument();
         return this.getAll()
                 .stream()
                 .filter(this.predicate)

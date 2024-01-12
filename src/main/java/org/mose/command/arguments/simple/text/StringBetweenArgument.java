@@ -3,10 +3,10 @@ package org.mose.command.arguments.simple.text;
 import org.jetbrains.annotations.NotNull;
 import org.mose.command.CommandArgument;
 import org.mose.command.CommandArgumentResult;
-import org.mose.command.context.CommandArgumentContext;
+import org.mose.command.context.ArgumentContext;
 import org.mose.command.context.CommandContext;
+import org.mose.command.exception.ArgumentException;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -20,12 +20,12 @@ public record StringBetweenArgument(@NotNull String id, char betweenChar) implem
 
     @Override
     public @NotNull
-    CommandArgumentResult<String> parse(@NotNull CommandContext context, @NotNull CommandArgumentContext<String> argument) throws IOException {
+    CommandArgumentResult<String> parse(@NotNull CommandContext context, @NotNull ArgumentContext argument) throws ArgumentException {
         String[] commands = context.getCommand();
-        int start = argument.getFirstArgument();
+        int start = argument.getArgumentIndex();
         Integer end = null;
         if (!commands[start].startsWith(this.betweenChar + "")) {
-            throw new IOException("String needs to start with " + this.betweenChar);
+            throw new ArgumentException("String needs to start with " + this.betweenChar);
         }
         for (int i = start; i < commands.length; i++) {
             String arg = commands[i];
@@ -37,20 +37,20 @@ public record StringBetweenArgument(@NotNull String id, char betweenChar) implem
                 break;
             }
         }
-        if (end==null) {
-            throw new IOException("Cannot find end of argument. Argument must end with " + this.betweenChar);
+        if (end == null) {
+            throw new ArgumentException("Cannot find end of argument. Argument must end with " + this.betweenChar);
         }
         StringBuilder builder = null;
         for (int i = start; i < end; i++) {
-            if (builder==null) {
+            if (builder == null) {
                 builder = new StringBuilder(commands[i]);
             } else {
                 builder.append(" ").append(commands[i]);
             }
         }
 
-        if (builder==null) {
-            throw new IOException("Builder was null. Report as issue");
+        if (builder == null) {
+            throw new ArgumentException("Builder was null. Report as issue");
         }
 
         String ret = builder.toString();
@@ -59,7 +59,7 @@ public record StringBetweenArgument(@NotNull String id, char betweenChar) implem
 
     @Override
     public @NotNull
-    Collection<String> suggest(@NotNull CommandContext commandContext, @NotNull CommandArgumentContext<String> argument) {
+    Collection<String> suggest(@NotNull CommandContext commandContext, @NotNull ArgumentContext argument) {
         String first = argument.getFocusArgument();
         return Arrays.asList(first + '"', first + "\\\"");
     }
