@@ -12,8 +12,10 @@ import org.mose.command.exception.ArgumentException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Provides a chose of OfflinePlayers to the user
@@ -21,11 +23,16 @@ import java.util.stream.Collectors;
 public class UserArgument implements CommandArgument<OfflinePlayer> {
 
     private final String id;
-    private final Predicate<OfflinePlayer> filter;
+    private final BiFunction<CommandContext, ArgumentContext, Stream<OfflinePlayer>> all;
 
+    @Deprecated(forRemoval = true)
     public UserArgument(String id, Predicate<OfflinePlayer> filter) {
+        this(id, (context, argument) -> Arrays.stream(Bukkit.getOfflinePlayers()).filter(filter));
+    }
+
+    public UserArgument(String id, BiFunction<CommandContext, ArgumentContext, Stream<OfflinePlayer>> all) {
         this.id = id;
-        this.filter = filter;
+        this.all = all;
     }
 
     @Override
@@ -36,8 +43,8 @@ public class UserArgument implements CommandArgument<OfflinePlayer> {
     @Override
     public @NotNull CommandArgumentResult<OfflinePlayer> parse(@NotNull CommandContext context, @NotNull ArgumentContext argument) throws ArgumentException {
         String command = argument.getFocusArgument();
-        return Arrays
-                .stream(Bukkit.getOfflinePlayers())
+        return all
+                .apply(context, argument)
                 .filter(offlinePlayer -> offlinePlayer.getName() != null)
                 .filter(offlinePlayer -> offlinePlayer.getName().equalsIgnoreCase(command))
                 .findAny()
@@ -48,13 +55,16 @@ public class UserArgument implements CommandArgument<OfflinePlayer> {
     @Override
     public @NotNull Collection<String> suggest(@NotNull CommandContext commandContext, @NotNull ArgumentContext argument) {
         String command = argument.getFocusArgument();
-        return Arrays
-                .stream(Bukkit.getOfflinePlayers())
-                .filter(this.filter)
+        return all
+                .apply(commandContext, argument)
                 .map(OfflinePlayer::getName)
                 .filter(Objects::nonNull)
                 .filter(name -> name.toLowerCase().startsWith(command))
                 .sorted()
                 .collect(Collectors.toList());
+    }
+
+    public static UserArgument allButSource(@NotNull String id) {
+        return new UserArgument(id, (command, argument) -> Arrays.stream(Bukkit.getOfflinePlayers()).filter(player -> !player.equals(command.getSource())));
     }
 }

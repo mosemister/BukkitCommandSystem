@@ -9,6 +9,7 @@ import org.mose.command.arguments.operation.OptionalArgument;
 import org.mose.command.exception.ArgumentException;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * The magic that is the CommandContext. Everything important about the command processing can be found
@@ -25,74 +26,10 @@ public class CommandContext {
      * @param commands The potential commands of the command context
      * @param command  The string arguments that the source wrote
      */
-    public CommandContext(@NotNull CommandSender source, @NotNull Collection<ArgumentCommand> commands,
-                          String... command) {
+    public CommandContext(@NotNull CommandSender source, @NotNull Collection<ArgumentCommand> commands, String... command) {
         this.commands = command;
         this.potentialCommands.addAll(commands);
         this.source = source;
-    }
-
-    /**
-     * Gets the raw string arguments that the command source used
-     *
-     * @return A String array of the raw string arguments
-     */
-    public @NotNull String[] getCommand() {
-        return this.commands;
-    }
-
-    /**
-     * The source of the command
-     *
-     * @return The command sender
-     */
-    public @NotNull CommandSender getSource() {
-        return this.source;
-    }
-
-    /**
-     * Gets the suggestions for the next argument in the command.
-     * This is based upon the argument command provided as well as the raw
-     * string arguments. The suggestion will be to the last of the raw string argument
-     *
-     * @param command The command to target
-     * @return A list of suggestions for the current context and provided command
-     */
-    public @NotNull Collection<String> getSuggestions(@NotNull ArgumentCommand command) {
-        List<CommandArgument<?>> arguments = command.getArguments();
-        int commandArgument = 0;
-        Collection<OptionalArgument<?>> optionalArguments = new ArrayList<>();
-        for (CommandArgument<?> arg : arguments) {
-            if (this.commands.length == commandArgument) {
-                if (arg instanceof OptionalArgument) {
-                    optionalArguments.add((OptionalArgument<?>) arg);
-                    continue;
-                }
-                return this.suggest(arg, commandArgument);
-            }
-            if (this.commands.length < commandArgument) {
-                throw new IllegalArgumentException("Not enough provided arguments for value of that argument");
-            }
-            try {
-                CommandArgumentResult<?> entry = this.parse(arg, commandArgument);
-                if (commandArgument == entry.getPosition() && arg instanceof OptionalArgument) {
-                    optionalArguments.add((OptionalArgument<?>) arg);
-                } else {
-                    optionalArguments.clear();
-                }
-                commandArgument = entry.getPosition();
-            } catch (ArgumentException e) {
-                return this.suggest(arg, commandArgument);
-            }
-        }
-        if (optionalArguments.isEmpty()) {
-            return Collections.emptySet();
-        }
-        Collection<String> ret = new HashSet<>();
-        for (OptionalArgument<?> argument : optionalArguments) {
-            ret.addAll(suggest(argument, commandArgument));
-        }
-        return ret;
     }
 
     /**
@@ -108,6 +45,21 @@ public class CommandContext {
      */
     public <T> T getArgument(@NotNull ArgumentCommand command, @NotNull CommandArgument<T> id) {
         return this.getArgument(command, id.getId());
+    }
+
+    /**
+     * Gets the argument value of the command argument provided
+     *
+     * @param command The command to target
+     * @param id      The command argument that should be used
+     * @param <T>     The expected type of argument (by providing the command argument, the type will be the same
+     *                unless the argument is breaking the standard)
+     * @return The value of the argument
+     * @throws IllegalArgumentException If the provided id argument is not part of the command
+     * @throws IllegalStateException    Argument requested is asking for string requirements then what is provided
+     */
+    public <T> T getArgument(@NotNull Supplier<ArgumentCommand> command, @NotNull CommandArgument<T> id) {
+        return getArgument(command, id);
     }
 
     /**
@@ -150,6 +102,43 @@ public class CommandContext {
             }
         }
         throw new IllegalArgumentException("Argument ID of '" + id + "' not found within command");
+    }
+
+    /**
+     * Gets the raw string arguments that the command source used
+     *
+     * @return A String array of the raw string arguments
+     */
+    public @NotNull String[] getCommand() {
+        return this.commands;
+    }
+
+    /**
+     * Gets the command the user is targeting
+     *
+     * @return A single argument command, if none can be found then {@link Optional#empty()} will be used
+     */
+    public @NotNull Optional<ArgumentCommand> getCompleteCommand() {
+        return this.potentialCommands.stream().filter(command -> {
+            List<CommandArgument<?>> arguments = command.getArguments();
+            int commandArgument = 0;
+            for (CommandArgument<?> arg : arguments) {
+                if (this.commands.length == commandArgument && arg instanceof OptionalArgument) {
+                    continue;
+                }
+                if (this.commands.length <= commandArgument) {
+                    return false;
+                }
+                try {
+                    CommandArgumentResult<?> entry = this.parse(arg, commandArgument);
+                    commandArgument = entry.getPosition();
+                } catch (ArgumentException e) {
+                    return false;
+                }
+            }
+            return this.commands.length == commandArgument;
+        }).findAny();
+
     }
 
     /**
@@ -200,34 +189,6 @@ public class CommandContext {
     }
 
     /**
-     * Gets the command the user is targeting
-     *
-     * @return A single argument command, if none can be found then {@link Optional#empty()} will be used
-     */
-    public @NotNull Optional<ArgumentCommand> getCompleteCommand() {
-        return this.potentialCommands.stream().filter(command -> {
-            List<CommandArgument<?>> arguments = command.getArguments();
-            int commandArgument = 0;
-            for (CommandArgument<?> arg : arguments) {
-                if (this.commands.length == commandArgument && arg instanceof OptionalArgument) {
-                    continue;
-                }
-                if (this.commands.length <= commandArgument) {
-                    return false;
-                }
-                try {
-                    CommandArgumentResult<?> entry = this.parse(arg, commandArgument);
-                    commandArgument = entry.getPosition();
-                } catch (ArgumentException e) {
-                    return false;
-                }
-            }
-            return this.commands.length == commandArgument;
-        }).findAny();
-
-    }
-
-    /**
      * Gets all potential commands from what the user has entered
      *
      * @return A set of all the potential commands
@@ -274,8 +235,57 @@ public class CommandContext {
         return set;
     }
 
-    private <T> @NotNull CommandArgumentResult<T> parse(@NotNull CommandArgument<T> arg, int commandArgument) throws
-            ArgumentException {
+    /**
+     * The source of the command
+     *
+     * @return The command sender
+     */
+    public @NotNull CommandSender getSource() {
+        return this.source;
+    }
+
+    /**
+     * Gets the suggestions for the next argument in the command.
+     * This is based upon the argument command provided as well as the raw
+     * string arguments. The suggestion will be to the last of the raw string argument
+     *
+     * @param command The command to target
+     * @return A list of suggestions for the current context and provided command
+     */
+    public @NotNull Collection<String> getSuggestions(@NotNull ArgumentCommand command) {
+        List<CommandArgument<?>> arguments = command.getArguments();
+        int commandArgument = 0;
+        Collection<String> suggestions = new LinkedList<>();
+        for (CommandArgument<?> arg : arguments) {
+            if (this.commands.length == commandArgument) {
+                suggestions.addAll(this.suggest(arg, commandArgument));
+                return suggestions;
+            }
+            if (this.commands.length < commandArgument) {
+                throw new IllegalArgumentException("Not enough provided arguments for value of that argument");
+            }
+            try {
+                CommandArgumentResult<?> entry = this.parse(arg, commandArgument);
+                if (arg instanceof OptionalArgument<?>) {
+                    suggestions.addAll(this.suggest(arg, commandArgument));
+                } else {
+                    suggestions.clear();
+                }
+                commandArgument = entry.getPosition();
+            } catch (Throwable e) {
+                try {
+                    suggestions.addAll(this.suggest(arg, commandArgument));
+                } catch (Throwable ignored) {
+                }
+                if (!(arg instanceof OptionalArgument<?>)) {
+                    break;
+                }
+            }
+        }
+        return suggestions;
+    }
+
+    private <T> @NotNull CommandArgumentResult<T> parse(@NotNull CommandArgument<T> arg, int commandArgument) throws ArgumentException {
         ArgumentCommandContext<T> argContext = new ArgumentCommandContext<>(arg, commandArgument, this.commands);
         return arg.parse(this, argContext);
     }
