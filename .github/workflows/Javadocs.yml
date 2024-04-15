@@ -1,6 +1,6 @@
 name: Maven JavaDoc
 
-on: [push, workflow_dispatch]
+on: [ push, workflow_dispatch ]
 
 jobs:
   build:
@@ -8,27 +8,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 16
-      uses: actions/setup-java@v2
-      with:
-        java-version: '16'
-        distribution: 'adopt'
-        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
-        settings-path: ${{ github.workspace }} # location for the settings.xml file
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+          settings-path: ${{ github.workspace }} # location for the settings.xml file
 
-    - name: Build with Maven
-      run: mvn javadoc:javadoc
+      - name: mark executable
+        run: chmod +x ./gradlew
 
-    - name: Check GitHub Pages status
-      uses: crazy-max/ghaction-github-status@v2
-      with:
-        pages_threshold: major_outage
+      - name: Build with Gradle
+        run: gradlew javadoc
 
-    - name: Deploy to GitHub Pages
-      uses: crazy-max/ghaction-github-pages@v2.5.0
-      with:
-        target_branch: gh-pages
-        build_dir: target/site/apidocs
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check GitHub Pages status
+        uses: crazy-max/ghaction-github-status@v2
+        with:
+          pages_threshold: major_outage
+
+      - name: Deploy to GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v2.5.0
+        with:
+          target_branch: gh-pages
+          build_dir: build/docs/
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
