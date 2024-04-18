@@ -59,7 +59,7 @@ public class CommandContext {
      * @throws IllegalStateException    Argument requested is asking for string requirements then what is provided
      */
     public <T> T getArgument(@NotNull Supplier<ArgumentCommand> command, @NotNull CommandArgument<T> id) {
-        return getArgument(command, id);
+        return getArgument(command.get(), id);
     }
 
     /**

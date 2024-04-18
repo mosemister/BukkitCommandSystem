@@ -41,7 +41,7 @@ public class CommandBuilder {
         return new BuiltCommand(this);
     }
 
-    public List<CommandArgument<?>> getArguments() {
+    public @NotNull List<CommandArgument<?>> getArguments() {
         return this.arguments;
     }
 
@@ -82,10 +82,12 @@ public class CommandBuilder {
     }
 
     public static ArgumentCommand build(CommandDetailSupplier supplier) {
-        var builder = new CommandBuilder();
+        CommandBuilder builder = new CommandBuilder();
         AtomicReference<ArgumentCommand> reference = new AtomicReference<>();
         Supplier<ArgumentCommand> supplierReference = reference::get;
-        return supplier.build(supplierReference, builder);
+        ArgumentCommand command = supplier.build(supplierReference, builder);
+        reference.set(command);
+        return command;
 
     }
 
