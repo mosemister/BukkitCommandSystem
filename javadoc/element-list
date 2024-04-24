@@ -1,0 +1,13 @@
+org.mose.command
+org.mose.command.arguments.collection.id
+org.mose.command.arguments.collection.misc
+org.mose.command.arguments.collection.source
+org.mose.command.arguments.operation
+org.mose.command.arguments.operation.permission
+org.mose.command.arguments.position
+org.mose.command.arguments.simple
+org.mose.command.arguments.simple.number
+org.mose.command.arguments.simple.text
+org.mose.command.builder
+org.mose.command.context
+org.mose.command.exception
