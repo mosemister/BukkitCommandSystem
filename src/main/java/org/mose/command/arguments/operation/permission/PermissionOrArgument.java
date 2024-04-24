@@ -28,13 +28,11 @@ public class PermissionOrArgument<T> implements CommandArgument<T> {
     private final @NotNull ParseCommandArgument<T> with;
     private final @NotNull ParseCommandArgument<T> or;
 
-    public PermissionOrArgument(@NotNull String id, @NotNull Predicate<CommandSender> permission,
-                                @NotNull ParseCommandArgument<T> with) {
+    public PermissionOrArgument(@NotNull String id, @NotNull Predicate<CommandSender> permission, @NotNull ParseCommandArgument<T> with) {
         this(id, permission, with, (T) null);
     }
 
-    public PermissionOrArgument(@NotNull String id, @NotNull Predicate<CommandSender> permission,
-                                @NotNull ParseCommandArgument<T> with, @Nullable T value) {
+    public PermissionOrArgument(@NotNull String id, @NotNull Predicate<CommandSender> permission, @NotNull ParseCommandArgument<T> with, @Nullable T value) {
         this(id, permission, with, new BlankArgument<>(id, value));
     }
 
@@ -45,8 +43,10 @@ public class PermissionOrArgument<T> implements CommandArgument<T> {
      * @param with       The command argument to use if the user has permission
      * @param or         The command argument to use if the user doesn't have permission
      */
-    public PermissionOrArgument(@NotNull String id, @NotNull Predicate<CommandSender> permission,
-                                @NotNull ParseCommandArgument<T> with, @NotNull ParseCommandArgument<T> or) {
+    public PermissionOrArgument(@NotNull String id,
+                                @NotNull Predicate<CommandSender> permission,
+                                @NotNull ParseCommandArgument<T> with,
+                                @NotNull ParseCommandArgument<T> or) {
         this.id = id;
         this.permission = permission;
         this.with = with;
@@ -54,15 +54,12 @@ public class PermissionOrArgument<T> implements CommandArgument<T> {
     }
 
     @Override
-    public @NotNull
-    String getId() {
+    public @NotNull String getId() {
         return this.id;
     }
 
     @Override
-    public @NotNull
-    CommandArgumentResult<T> parse(@NotNull CommandContext context, @NotNull ArgumentContext argument) throws
-            ArgumentException {
+    public @NotNull CommandArgumentResult<T> parse(@NotNull CommandContext context, @NotNull ArgumentContext argument) throws ArgumentException {
         if (this.permission.test(context.getSource())) {
             return this.with.parse(context, argument);
         }
@@ -70,8 +67,7 @@ public class PermissionOrArgument<T> implements CommandArgument<T> {
     }
 
     @Override
-    public @NotNull
-    Collection<String> suggest(@NotNull CommandContext context, @NotNull ArgumentContext argument) {
+    public @NotNull Collection<String> suggest(@NotNull CommandContext context, @NotNull ArgumentContext argument) {
         if (this.permission.test(context.getSource())) {
             if (this.with instanceof SuggestCommandArgument) {
                 return ((SuggestCommandArgument<T>) this.with).suggest(context, argument);

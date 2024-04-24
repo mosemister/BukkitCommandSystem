@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -54,14 +53,14 @@ public class UserArgument implements CommandArgument<OfflinePlayer> {
 
     @Override
     public @NotNull Collection<String> suggest(@NotNull CommandContext commandContext, @NotNull ArgumentContext argument) {
-        String command = argument.getFocusArgument();
+        String command = argument.getFocusArgument().toLowerCase();
         return all
                 .apply(commandContext, argument)
                 .map(OfflinePlayer::getName)
                 .filter(Objects::nonNull)
                 .filter(name -> name.toLowerCase().startsWith(command))
                 .sorted()
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public static UserArgument allButSource(@NotNull String id) {
